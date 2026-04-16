@@ -562,11 +562,174 @@ async function runPersonality(){
 }
 function copyPersona(){if(window._lastPersonaMd){navigator.clipboard.writeText(window._lastPersonaMd);alert('Report copied to clipboard')}}
 
-/* ---------- PDF Export ---------- */
+/* ---------- PDF Export (Full Crystal Knows Report) ---------- */
 function downloadPersonaPdf(name){
-  const el=document.getElementById('personaReportBody');if(!el)return alert('No report to export');
-  const opt={margin:[0.4,0.5],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-PersonalityProfile.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,backgroundColor:'#111118',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
-  html2pdf().set(opt).from(el).save();
+  const md=window._lastPersonaMd;if(!md)return alert('No report to export');
+  const parsed=parsePersonaMd(md);
+  const discColors={D:'#ef4444',I:'#eab308',S:'#22c55e',C:'#3b82f6'};
+  const discLabels={D:'Dominance',I:'Influence',S:'Steadiness',C:'Conscientiousness'};
+  const discType=parsed.disc||'';
+  const primaryDisc=discType.charAt(0).toUpperCase();
+  const hc=discColors[primaryDisc]||'#8b5cf6';
+
+  function ckSec(title,icon,color,items){
+    if(!items||!items.length)return '';
+    return `<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;overflow:hidden;margin-bottom:12px">
+      <div style="padding:12px 16px;font-size:13px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:8px;background:${color}18;color:${color}">
+        <span style="font-size:16px">${icon}</span>${esc(title)}
+      </div>
+      ${items.map(x=>`<div style="padding:10px 16px;border-top:1px solid #1f1f2e;font-size:12px;color:#ccc;line-height:1.5">${esc(x)}</div>`).join('')}
+    </div>`;
+  }
+
+  let h=`<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#111118;color:#fff;padding:32px;min-width:700px">`;
+
+  // Header
+  h+=`<div style="background:linear-gradient(135deg,${hc}cc,${hc}88);padding:24px 28px;border-radius:14px 14px 0 0;margin-bottom:0">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.8);margin-bottom:4px">Personality Assessment — Full Report</div>
+    <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:4px">${esc(name||'Profile')}</div>
+    ${discType?`<span style="background:rgba(0,0,0,.3);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:700">${esc(discType)} Profile</span>`:''}
+    ${parsed.mbti?` <span style="background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600">${esc(parsed.mbti)}</span>`:''}
+    ${parsed.enneagram?` <span style="background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600">${esc(parsed.enneagram)}</span>`:''}
+  </div>`;
+
+  h+=`<div style="background:#15151e;padding:24px 28px;border-radius:0 0 14px 14px;border:1px solid #2a2a35;border-top:none">`;
+
+  // DISC Card
+  if(parsed.disc){
+    h+=`<div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:6px">DISC Profile</div>
+      ${parsed.discTypeName?`<div style="font-size:18px;font-weight:800;color:${hc};margin-bottom:12px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:14px;color:#888">(${esc(discType)})</span></div>`:''}
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        ${['D','I','S','C'].map(l=>{
+          const active=discType.toUpperCase().includes(l);
+          return `<div style="flex:1;text-align:center;padding:12px 8px;border-radius:10px;border:2px solid ${active?discColors[l]+'88':'#2a2a35'};background:${active?discColors[l]+'15':'#1a1a24'}">
+            <div style="font-size:22px;font-weight:800;color:${active?discColors[l]:'#444'}">${active?l:'—'}</div>
+            <div style="font-size:10px;color:${active?'#aaa':'#555'};margin-top:2px">${discLabels[l]}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${parsed.discDesc?`<div style="color:#aaa;font-size:12px;line-height:1.6">${esc(parsed.discDesc)}</div>`:''}
+      ${parsed.traitBadges.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${parsed.traitBadges.map(b=>`<span style="padding:4px 12px;border-radius:16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:${hc};border:1.5px solid ${hc}55">${esc(b)}</span>`).join('')}</div>`:''}
+    </div>`;
+  }
+
+  // Personality Traits (Spectrum Sliders)
+  if(parsed.personalityTraits.length){
+    h+=`<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;overflow:hidden;margin-bottom:12px">
+      <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(139,92,246,.12);color:#a78bfa">⚖️ Personality Traits</div>
+      ${parsed.personalityTraits.map(t=>{
+        const pct=t.value<=10?t.value*10:Math.min(100,t.value);
+        return `<div style="padding:10px 16px;border-top:1px solid #1f1f2e">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:10px;color:#888;width:80px;text-align:right;flex-shrink:0">${esc(t.left)}</span>
+            <div style="flex:1;height:6px;background:#2a2a35;border-radius:3px;position:relative">
+              <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:${hc};border:2px solid #111118"></div>
+            </div>
+            <span style="font-size:10px;color:#888;width:80px;flex-shrink:0">${esc(t.right)}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // Big Five
+  if(parsed.bigFive.length){
+    const traitColors=['#a78bfa','#60a5fa','#34d399','#fbbf24','#f87171'];
+    h+=`<div style="break-inside:avoid;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:10px">Big Five (OCEAN)</div>
+      ${parsed.bigFive.map((t,i)=>{
+        const pct=Math.max(0,Math.min(100,parseInt(t.score)||50));
+        const clr=traitColors[i%5];
+        return `<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:12px;font-weight:600;color:#fff">${esc(t.name)}</span>
+            <span style="font-size:11px;font-weight:700;color:${clr}">${pct}/100</span>
+          </div>
+          <div style="height:6px;background:#2a2a35;border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${clr};border-radius:3px"></div>
+          </div>
+          ${t.desc?`<div style="font-size:10px;color:#777;margin-top:2px">${esc(t.desc)}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // MBTI + Enneagram
+  if(parsed.mbti||parsed.enneagram){
+    h+=`<div style="display:flex;gap:12px;margin-bottom:12px">`;
+    if(parsed.mbti){
+      h+=`<div style="flex:1;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px">MBTI</div>
+        <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${esc(parsed.mbti)}</div>
+        ${parsed.mbtiDesc?`<div style="font-size:11px;color:#888;margin-top:6px">${esc(parsed.mbtiDesc)}</div>`:''}
+      </div>`;
+    }
+    if(parsed.enneagram){
+      h+=`<div style="flex:1;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px">Enneagram</div>
+        <div style="font-size:28px;font-weight:800;color:#fbbf24">${esc(parsed.enneagram)}</div>
+        ${parsed.enneagramDesc?`<div style="font-size:11px;color:#888;margin-top:6px">${esc(parsed.enneagramDesc)}</div>`:''}
+      </div>`;
+    }
+    h+=`</div>`;
+  }
+
+  // CK Section pairs
+  const pairs=[
+    [['Behavior','🎯','#60a5fa',parsed.behavior],['Energizers','⚡','#fbbf24',parsed.energizers]],
+    [['Drainers','📉','#f87171',parsed.drainers],['Strengths','🚀','#22c55e',parsed.strengthsList]],
+    [['Blind Spots','⚠️','#eab308',parsed.blindSpotsList],['First Impression','💡','#a78bfa',parsed.firstImpression]],
+    [['Building Trust','🤝','#f97316',parsed.buildingTrust],['Product Demo','🎤','#06b6d4',parsed.productDemo]],
+    [['Negotiating','🏷️','#ec4899',parsed.negotiating],['Pricing','📊','#8b5cf6',parsed.pricing]],
+    [['Drive to Action','📝','#14b8a6',parsed.driveToAction],['Following Up','⏰','#f59e0b',parsed.followingUp]],
+  ];
+  pairs.forEach(([a,b])=>{
+    const sa=ckSec(...a),sb2=ckSec(...b);
+    if(sa||sb2)h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${sa}${sb2}</div>`;
+  });
+
+  if(parsed.writingStyle.length)h+=ckSec('Writing Style — How to Email Them','✉️','#818cf8',parsed.writingStyle);
+
+  // Text fallbacks
+  ['commStyle','idealEnv','careerFit'].forEach(k=>{
+    if(!parsed[k])return;
+    const cfg={commStyle:['Communication Style','💬','#c4b5fd'],idealEnv:['Ideal Environment','🌱','#93c5fd'],careerFit:['Career Fit','📈','#fca5a5']};
+    const[t,ic,cl]=cfg[k];
+    h+=`<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:16px">${ic}</span><span style="font-size:13px;font-weight:700;color:${cl};text-transform:uppercase;letter-spacing:.5px">${t}</span></div>
+      <div style="color:#aaa;font-size:12px;line-height:1.6">${esc(parsed[k])}</div>
+    </div>`;
+  });
+
+  // Values
+  if(parsed.values.length){
+    const valIcons=['⭐','💰','🎯','🔒','✅','🌟','💎','🏆'];
+    const valColors=['#fbbf24','#34d399','#60a5fa','#f87171','#a78bfa','#ec4899','#06b6d4','#f97316'];
+    h+=`<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;overflow:hidden;margin-bottom:12px">
+      <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(236,72,153,.12);color:#ec4899">🔑 Values</div>
+      ${parsed.values.map((v,i)=>`<div style="padding:10px 16px;border-top:1px solid #1f1f2e;display:flex;align-items:flex-start;gap:10px">
+        <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:${valColors[i%8]}18;color:${valColors[i%8]}">${valIcons[i%8]}</div>
+        <div><div style="font-size:12px;font-weight:700;color:${valColors[i%8]}">${esc(v.name)}</div>${v.desc?`<div style="font-size:11px;color:#888;margin-top:2px">${esc(v.desc)}</div>`:''}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  // Bottom Line
+  if(parsed.bottomLine){
+    h+=`<div style="break-inside:avoid;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(96,165,250,.12));border:1px solid rgba(139,92,246,.25);border-radius:10px;padding:16px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:.5px">Bottom Line</div>
+      <div style="color:#ddd;font-size:13px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
+    </div>`;
+  }
+
+  h+=`<div style="text-align:center;padding:12px 0;font-size:10px;color:#555">Generated by RecruitDNA · ${new Date().toLocaleDateString()}</div>`;
+  h+=`</div></div>`;
+
+  // Create hidden container, render, export, remove
+  const wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-9999px;top:0';wrap.innerHTML=h;document.body.appendChild(wrap);
+  const opt={margin:[0.3,0.4],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,backgroundColor:'#111118',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
+  html2pdf().set(opt).from(wrap.firstChild).save().then(()=>setTimeout(()=>wrap.remove(),2000));
 }
 
 /* ---------- Copy shareable link ---------- */
@@ -576,10 +739,9 @@ function copyPersonaLink(candId){
   navigator.clipboard.writeText(url).then(()=>alert('Link copied!')).catch(()=>{prompt('Copy this link:',url)});
 }
 
-/* ---------- Executive-Grade Personality Report ---------- */
+/* ---------- On-Screen Assessment Summary ---------- */
 function renderPersonaReport(md,name){
   if(!md)return '<div style="color:#fca5a5">No report generated.</div>';
-  // Parse structured data from markdown
   const parsed=parsePersonaMd(md);
   const discColors={D:'#ef4444',I:'#eab308',S:'#22c55e',C:'#3b82f6'};
   const discLabels={D:'Dominance',I:'Influence',S:'Steadiness',C:'Conscientiousness'};
@@ -602,31 +764,21 @@ function renderPersonaReport(md,name){
     </div>`:''}
   </div>`;
 
-  // ── ACTION BAR ──
-  html+=`<div style="display:flex;gap:10px;padding:16px 32px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap">
-    <button class="btn btn-primary" style="width:auto;padding:8px 18px;font-size:13px" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download PDF</button>
+  // ── ACTION BAR with prominent Download button ──
+  html+=`<div style="display:flex;gap:10px;padding:16px 32px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;align-items:center">
+    <button class="btn btn-primary" style="width:auto;padding:10px 24px;font-size:14px;font-weight:700" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download Full Report (PDF)</button>
     <button class="btn btn-ghost" style="width:auto;padding:8px 18px;font-size:13px" onclick="copyPersonaLink('${window._lastPersonaCandId||''}')">🔗 Copy link</button>
     <button class="btn btn-ghost" style="width:auto;padding:8px 18px;font-size:13px" onclick="copyPersona()">📋 Copy text</button>
     <button class="btn btn-ghost" style="width:auto;padding:8px 18px;font-size:13px" onclick="document.getElementById('persResult').classList.add('hidden')">✕ Dismiss</button>
+    <span style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.4)">Full details in PDF report</span>
   </div>`;
 
   html+=`<div style="padding:28px 32px;display:grid;gap:20px">`;
 
-  // Helper: render a Crystal Knows section card
-  function ckSection(title,icon,color,items){
-    if(!items||!items.length)return '';
-    return `<div class="ck-section">
-      <div class="ck-section-head" style="background:${color}18;color:${color}">
-        <span style="font-size:18px">${icon}</span>${esc(title)}
-      </div>
-      <div class="ck-section-body">${items.map(x=>`<div class="ck-item">${esc(x)}</div>`).join('')}</div>
-    </div>`;
-  }
-
-  // ── DISC CARD (enhanced) ──
+  // ── DISC CARD (summary) ──
   if(parsed.disc){
     html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
-      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:6px">DISC Profile — Crystal Knows Format</div>
+      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:6px">DISC Profile</div>
       ${parsed.discTypeName?`<div style="font-size:22px;font-weight:800;color:${headerColor};margin-bottom:16px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:16px;color:rgba(255,255,255,.5)">(${esc(discType)})</span></div>`:''}
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
         ${['D','I','S','C'].map(l=>{
@@ -640,29 +792,6 @@ function renderPersonaReport(md,name){
       </div>
       ${parsed.discDesc?`<div style="color:rgba(255,255,255,.75);font-size:14px;line-height:1.6;margin-bottom:14px">${esc(parsed.discDesc)}</div>`:''}
       ${parsed.traitBadges.length?`<div style="display:flex;gap:10px;flex-wrap:wrap">${parsed.traitBadges.map(b=>`<span class="ck-badge" style="color:${headerColor};border-color:${headerColor}55">${esc(b.toUpperCase())}</span>`).join('')}</div>`:''}
-    </div>`;
-  }
-
-  // ── PERSONALITY TRAITS (Spectrum Sliders) ──
-  if(parsed.personalityTraits.length){
-    html+=`<div class="ck-section">
-      <div class="ck-section-head" style="background:rgba(139,92,246,.12);color:#a78bfa">
-        <span style="font-size:18px">⚖️</span>Personality Traits
-      </div>
-      <div class="ck-section-body">
-        ${parsed.personalityTraits.map(t=>{
-          const pct=t.value<=10?t.value*10:Math.min(100,t.value);
-          return `<div class="ck-spectrum">
-            <div class="ck-spectrum-row">
-              <span class="ck-spectrum-label">${esc(t.left)}</span>
-              <div class="ck-spectrum-bar">
-                <div class="ck-spectrum-dot" style="left:${pct}%;border-color:${headerColor};background:${headerColor}"></div>
-              </div>
-              <span class="ck-spectrum-label right">${esc(t.right)}</span>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
     </div>`;
   }
 
@@ -682,7 +811,6 @@ function renderPersonaReport(md,name){
           <div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
             <div style="height:100%;width:${pct}%;background:${clr};border-radius:4px;transition:width .6s ease"></div>
           </div>
-          ${t.desc?`<div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:4px">${esc(t.desc)}</div>`:''}
         </div>`;
       }).join('')}
     </div>`;
@@ -708,97 +836,22 @@ function renderPersonaReport(md,name){
     html+=`</div>`;
   }
 
-  // ── BEHAVIOR + ENERGIZERS ROW ──
-  if(parsed.behavior.length||parsed.energizers.length){
+  // ── STRENGTHS + BLIND SPOTS (quick glance) ──
+  if(parsed.strengthsList.length||parsed.blindSpotsList.length){
     html+=`<div class="ck-grid">`;
-    html+=ckSection('Behavior','🎯','#60a5fa',parsed.behavior);
-    html+=ckSection('Energizers','⚡','#fbbf24',parsed.energizers);
+    if(parsed.strengthsList.length){
+      html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px">
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#86efac;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>🚀</span>Key Strengths</div>
+        ${parsed.strengthsList.slice(0,4).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${esc(s)}</div>`).join('')}
+      </div>`;
+    }
+    if(parsed.blindSpotsList.length){
+      html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px">
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fde68a;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>⚠️</span>Watch Out For</div>
+        ${parsed.blindSpotsList.slice(0,4).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${esc(s)}</div>`).join('')}
+      </div>`;
+    }
     html+=`</div>`;
-  }
-
-  // ── DRAINERS + STRENGTHS ROW ──
-  if(parsed.drainers.length||parsed.strengthsList.length){
-    html+=`<div class="ck-grid">`;
-    html+=ckSection('Drainers','📉','#f87171',parsed.drainers);
-    html+=ckSection('Strengths','🚀','#22c55e',parsed.strengthsList);
-    html+=`</div>`;
-  }
-
-  // ── BLIND SPOTS + FIRST IMPRESSION ROW ──
-  if(parsed.blindSpotsList.length||parsed.firstImpression.length){
-    html+=`<div class="ck-grid">`;
-    html+=ckSection('Blind Spots','⚠️','#eab308',parsed.blindSpotsList);
-    html+=ckSection('Make a Great First Impression','💡','#a78bfa',parsed.firstImpression);
-    html+=`</div>`;
-  }
-
-  // ── BUILDING TRUST + PRODUCT DEMO ROW ──
-  if(parsed.buildingTrust.length||parsed.productDemo.length){
-    html+=`<div class="ck-grid">`;
-    html+=ckSection('Building Trust','🤝','#f97316',parsed.buildingTrust);
-    html+=ckSection('Product Demo','🎤','#06b6d4',parsed.productDemo);
-    html+=`</div>`;
-  }
-
-  // ── NEGOTIATING + PRICING ROW ──
-  if(parsed.negotiating.length||parsed.pricing.length){
-    html+=`<div class="ck-grid">`;
-    html+=ckSection('Negotiating','🏷️','#ec4899',parsed.negotiating);
-    html+=ckSection('Pricing','📊','#8b5cf6',parsed.pricing);
-    html+=`</div>`;
-  }
-
-  // ── DRIVE TO ACTION + FOLLOWING UP ROW ──
-  if(parsed.driveToAction.length||parsed.followingUp.length){
-    html+=`<div class="ck-grid">`;
-    html+=ckSection('How to Drive to Action','📝','#14b8a6',parsed.driveToAction);
-    html+=ckSection('Following Up','⏰','#f59e0b',parsed.followingUp);
-    html+=`</div>`;
-  }
-
-  // ── WRITING STYLE / COMMUNICATION ──
-  if(parsed.writingStyle.length){
-    html+=ckSection('Writing Style — How to Email Them','✉️','#818cf8',parsed.writingStyle);
-  }
-
-  // ── FALLBACK: TEXT SECTION CARDS (for non-list content) ──
-  const textCards=[
-    {key:'strengths',list:'strengthsList',title:'Strengths',icon:'🚀',color:'#86efac'},
-    {key:'blindSpots',list:'blindSpotsList',title:'Blind Spots',icon:'⚠️',color:'#fde68a'},
-    {key:'commStyle',list:null,title:'Communication Style',icon:'💬',color:'#c4b5fd'},
-    {key:'idealEnv',list:null,title:'Ideal Environment',icon:'🌱',color:'#93c5fd'},
-    {key:'careerFit',list:null,title:'Career Fit',icon:'📈',color:'#fca5a5'},
-  ];
-  textCards.forEach(s=>{
-    if(!parsed[s.key])return;
-    if(s.list&&parsed[s.list]&&parsed[s.list].length)return; // already rendered as CK section
-    html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-        <span style="font-size:20px">${s.icon}</span>
-        <span style="font-size:15px;font-weight:700;color:${s.color};text-transform:uppercase;letter-spacing:.5px">${s.title}</span>
-      </div>
-      <div style="color:rgba(255,255,255,.8);font-size:14px;line-height:1.7">${formatSectionText(parsed[s.key])}</div>
-    </div>`;
-  });
-
-  // ── VALUES ──
-  if(parsed.values.length){
-    const valIcons=['⭐','💰','🎯','🔒','✅','🌟','💎','🏆'];
-    const valColors=['#fbbf24','#34d399','#60a5fa','#f87171','#a78bfa','#ec4899','#06b6d4','#f97316'];
-    html+=`<div class="ck-section">
-      <div class="ck-section-head" style="background:rgba(236,72,153,.12);color:#ec4899">
-        <span style="font-size:18px">🔑</span>Values
-      </div>
-      <div class="ck-section-body">
-        ${parsed.values.map((v,i)=>`<div class="ck-value-card">
-          <div class="ck-value-icon" style="background:${valColors[i%8]}18;color:${valColors[i%8]}">${valIcons[i%8]}</div>
-          <div>
-            <div class="ck-value-title" style="color:${valColors[i%8]}">${esc(v.name)}</div>
-            ${v.desc?`<div class="ck-value-desc">${esc(v.desc)}</div>`:''}
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>`;
   }
 
   // ── BOTTOM LINE ──
@@ -808,6 +861,12 @@ function renderPersonaReport(md,name){
       <div style="color:rgba(255,255,255,.9);font-size:15px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
     </div>`;
   }
+
+  // ── CTA: Download full report ──
+  html+=`<div style="text-align:center;padding:20px 0">
+    <button class="btn btn-primary" style="width:auto;padding:14px 36px;font-size:15px;font-weight:700;letter-spacing:.3px" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download Full Crystal Knows Report</button>
+    <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:10px">Includes: Personality Traits, Behavior, Energizers, Drainers, Communication, Negotiating, Values & more</div>
+  </div>`;
 
   html+=`</div></div>`;
   return html;
