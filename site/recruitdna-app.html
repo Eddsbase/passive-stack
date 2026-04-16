@@ -8,98 +8,98 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:#0a0a0f;color:#fff;line-height:1.5;min-height:100vh}
-.bg-glow{position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(139,92,246,.2) 0%,transparent 60%);z-index:0;pointer-events:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:#0a0a0a;color:#fff;line-height:1.5;min-height:100vh}
+.bg-glow{position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(239,68,68,.12) 0%,transparent 60%);z-index:0;pointer-events:none}
 /* AUTH */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1}
-.auth-card{width:100%;max-width:420px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:40px;backdrop-filter:blur(20px)}
-.auth-logo{font-size:28px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
+.auth-card{width:100%;max-width:420px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:40px;backdrop-filter:blur(20px)}
+.auth-logo{font-size:28px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
 .auth-sub{text-align:center;color:rgba(255,255,255,.6);font-size:14px;margin-bottom:32px}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:#8b5cf6}
-.btn{display:inline-block;padding:12px 20px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:all .2s;font-family:inherit;text-decoration:none;color:#fff}
-.btn-primary{background:linear-gradient(135deg,#8b5cf6,#6366f1);width:100%}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(139,92,246,.3)}
-.btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
-.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#ef4444}
+.btn{display:inline-block;padding:12px 20px;border-radius:24px;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .2s;font-family:inherit;text-decoration:none;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.btn-primary{background:#ef4444;width:100%}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(239,68,68,.35);background:#dc2626}
+.btn-ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
 .btn-sm{padding:8px 14px;font-size:13px}
 .switch{text-align:center;margin-top:20px;font-size:14px;color:rgba(255,255,255,.6)}
-.switch a{color:#a78bfa;text-decoration:none;font-weight:600;cursor:pointer}
-.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
-.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
+.switch a{color:#ef4444;text-decoration:none;font-weight:600;cursor:pointer}
+.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
+.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:16px}
 /* APP */
 .app{display:none;min-height:100vh;position:relative;z-index:1}
 .app.active{display:flex}
-.sidebar{width:240px;background:rgba(255,255,255,.02);border-right:1px solid rgba(255,255,255,.08);padding:24px 16px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
-.sidebar .logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding:0 12px 24px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;font-weight:500;transition:all .15s;margin-bottom:2px}
-.nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
-.nav-item.active{background:rgba(139,92,246,.15);color:#c4b5fd}
+.sidebar{width:240px;background:#0e0e0e;border-right:1px solid rgba(255,255,255,.06);padding:24px 16px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
+.sidebar .logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding:0 12px 24px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:rgba(255,255,255,.6);cursor:pointer;font-size:14px;font-weight:500;transition:all .15s;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,.04);color:#fff}
+.nav-item.active{background:rgba(239,68,68,.12);color:#fca5a5}
 .nav-item .ico{width:18px;text-align:center}
-.sidebar .user{margin-top:auto;padding:16px 12px;border-top:1px solid rgba(255,255,255,.08);font-size:12px}
+.sidebar .user{margin-top:auto;padding:16px 12px;border-top:1px solid rgba(255,255,255,.06);font-size:12px}
 .sidebar .user .email{color:rgba(255,255,255,.5);margin-bottom:8px;word-break:break-all}
 .main{flex:1;margin-left:240px;padding:32px 40px;min-width:0}
 .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px}
 .page-head h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
-.page-head p{color:rgba(255,255,255,.55);font-size:14px;margin-top:4px}
+.page-head p{color:rgba(255,255,255,.45);font-size:14px;margin-top:4px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
-.stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px}
-.stat .label{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.stat .val{font-size:32px;font-weight:800;letter-spacing:-1px}
-.stat .sub{font-size:12px;color:#86efac;margin-top:4px}
-.panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;margin-bottom:24px}
-.panel h2{font-size:18px;font-weight:700;margin-bottom:16px}
+.stat{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px}
+.stat .label{font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat .val{font-size:32px;font-weight:800;letter-spacing:-1px;color:#ef4444}
+.stat .sub{font-size:12px;color:#10b981;margin-top:4px}
+.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px;margin-bottom:24px}
+.panel h2{font-size:18px;font-weight:700;margin-bottom:16px;color:#fff}
 /* PIPELINE */
 .pipeline{display:grid;grid-template-columns:repeat(6,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
-.col{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;min-height:300px}
-.col-head{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 12px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:10px}
-.col-head .name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.7)}
-.col-head .count{font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:10px;color:rgba(255,255,255,.7)}
-.cand-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
-.cand-card:hover{background:rgba(255,255,255,.07);border-color:rgba(139,92,246,.3)}
+.col{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px;min-height:300px}
+.col-head{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 12px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:10px}
+.col-head .name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.6)}
+.col-head .count{font-size:11px;background:rgba(239,68,68,.12);padding:2px 8px;border-radius:10px;color:#fca5a5}
+.cand-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.cand-card:hover{background:rgba(255,255,255,.06);border-color:rgba(239,68,68,.3)}
 .cand-card .name{font-size:14px;font-weight:700;margin-bottom:2px}
-.cand-card .title{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:8px}
+.cand-card .title{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:8px}
 .cand-card .meta{display:flex;justify-content:space-between;align-items:center;font-size:11px}
-.cand-card .score{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
+.cand-card .score{background:#ef4444;color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
 /* TABLE */
 .tbl{width:100%;border-collapse:collapse}
-.tbl th{text-align:left;font-size:12px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;padding:12px 8px;border-bottom:1px solid rgba(255,255,255,.08)}
-.tbl td{padding:14px 8px;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.tbl th{text-align:left;font-size:12px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;padding:12px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td{padding:14px 8px;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px}
 .tbl tr:hover td{background:rgba(255,255,255,.02)}
 .tag{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;text-transform:uppercase}
-.tag-open{background:rgba(34,197,94,.15);color:#86efac}
-.tag-paused{background:rgba(234,179,8,.15);color:#fde68a}
-.tag-closed{background:rgba(239,68,68,.15);color:#fca5a5}
+.tag-open{background:rgba(16,185,129,.12);color:#6ee7b7}
+.tag-paused{background:rgba(234,179,8,.12);color:#fde68a}
+.tag-closed{background:rgba(239,68,68,.12);color:#fca5a5}
 /* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .modal-bg.active{display:flex}
-.modal{background:#15151e;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal{background:#111111;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
 .modal h2{font-size:22px;font-weight:800;margin-bottom:4px}
-.modal p.sub{color:rgba(255,255,255,.55);font-size:13px;margin-bottom:20px}
+.modal p.sub{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:20px}
 .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
 .hidden{display:none!important}
-.empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.4);font-size:14px}
+.empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.35);font-size:14px}
 @media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0;padding:20px}.pipeline{grid-template-columns:repeat(6,260px)}}
 /* Crystal Knows Style Sections */
-.ck-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+.ck-section{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden}
 .ck-section-head{padding:16px 20px;font-size:15px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
 .ck-section-body{padding:0}
-.ck-item{padding:14px 20px;border-top:1px solid rgba(255,255,255,.05);font-size:14px;color:rgba(255,255,255,.85);line-height:1.5}
+.ck-item{padding:14px 20px;border-top:1px solid rgba(255,255,255,.04);font-size:14px;color:rgba(255,255,255,.8);line-height:1.5}
 .ck-item:first-child{border-top:none}
-.ck-spectrum{padding:16px 20px;border-top:1px solid rgba(255,255,255,.05)}
+.ck-spectrum{padding:16px 20px;border-top:1px solid rgba(255,255,255,.04)}
 .ck-spectrum:first-child{border-top:none}
 .ck-spectrum-row{display:flex;align-items:center;gap:14px}
-.ck-spectrum-label{font-size:12px;color:rgba(255,255,255,.55);width:90px;text-align:right;flex-shrink:0}
+.ck-spectrum-label{font-size:12px;color:rgba(255,255,255,.5);width:90px;text-align:right;flex-shrink:0}
 .ck-spectrum-label.right{text-align:left}
-.ck-spectrum-bar{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;position:relative}
-.ck-spectrum-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;border:3px solid;background:#111118}
-.ck-value-card{padding:16px 20px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:flex-start;gap:14px}
+.ck-spectrum-bar{flex:1;height:6px;background:rgba(255,255,255,.05);border-radius:3px;position:relative}
+.ck-spectrum-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;border:3px solid;background:#0a0a0a}
+.ck-value-card{padding:16px 20px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:flex-start;gap:14px}
 .ck-value-card:first-child{border-top:none}
 .ck-value-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .ck-value-title{font-size:14px;font-weight:700;margin-bottom:3px}
-.ck-value-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.5}
+.ck-value-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5}
 .ck-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:700px){.ck-grid{grid-template-columns:1fr}}
 .ck-trait-badges{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 16px}
@@ -123,7 +123,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     <div class="nav-item" data-view="workflows"><span class="ico">⚙</span>Workflows</div>
     <div class="nav-item" data-view="settings"><span class="ico">✎</span>Settings</div>
     <div class="user">
-      <div class="email" id="userEmail" style="color:#86efac">Demo workspace</div>
+      <div class="email" id="userEmail" style="color:#6ee7b7">Demo workspace</div>
     </div>
   </aside>
 
@@ -227,7 +227,7 @@ Skills: Figma, Design Systems, User Research, Prototyping, Sketch..."></textarea
         <div class="field"><label>Job description</label><textarea id="aiJob" rows="4" placeholder="We're looking for a senior..."></textarea></div>
         <div class="field"><label>Resume / candidate summary</label><textarea id="aiRes" rows="6" placeholder="John Smith, 8 years experience..."></textarea></div>
         <button class="btn btn-primary" style="width:auto" onclick="scoreResume()">Score match</button>
-        <div id="aiResult" class="hidden" style="margin-top:20px;padding:20px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.3);border-radius:12px"></div>
+        <div id="aiResult" class="hidden" style="margin-top:20px;padding:20px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:12px"></div>
       </div>
       <div class="panel">
         <h2>Outreach Generator</h2>
@@ -235,7 +235,7 @@ Skills: Figma, Design Systems, User Research, Prototyping, Sketch..."></textarea
         <div class="field"><label>Candidate name</label><input id="outName" placeholder="Sarah"></div>
         <div class="field"><label>Role you're pitching</label><input id="outRole" placeholder="Senior Product Designer at Acme"></div>
         <button class="btn btn-primary" style="width:auto" onclick="genOutreach()">Generate message</button>
-        <div id="outResult" class="hidden" style="margin-top:20px;padding:20px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.3);border-radius:12px;white-space:pre-wrap;font-size:14px;line-height:1.6"></div>
+        <div id="outResult" class="hidden" style="margin-top:20px;padding:20px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:12px;white-space:pre-wrap;font-size:14px;line-height:1.6"></div>
       </div>
       <div class="panel">
         <h2>Personality Profiler</h2>
@@ -519,7 +519,7 @@ async function scoreResume(){
   const el=$('aiResult');el.classList.remove('hidden');el.innerHTML='<div style="color:rgba(255,255,255,.7)">Calling Claude...</div>';
   try{
     const d=await callAgent('ai-score-resume',{job,resume:res});
-    el.innerHTML=`<div style="font-size:48px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${d.score}/100</div><div style="color:#fff;font-weight:600;margin:8px 0">${esc(d.summary||'')}</div>${d.strengths?.length?`<div style="margin-top:12px"><div style="font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Strengths</div>${d.strengths.map(s=>`<div style="font-size:13px;color:rgba(255,255,255,.8);margin:2px 0">· ${esc(s)}</div>`).join('')}</div>`:''}${d.gaps?.length?`<div style="margin-top:12px"><div style="font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Gaps</div>${d.gaps.map(s=>`<div style="font-size:13px;color:rgba(255,255,255,.8);margin:2px 0">· ${esc(s)}</div>`).join('')}</div>`:''}`;
+    el.innerHTML=`<div style="font-size:48px;font-weight:800;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${d.score}/100</div><div style="color:#fff;font-weight:600;margin:8px 0">${esc(d.summary||'')}</div>${d.strengths?.length?`<div style="margin-top:12px"><div style="font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Strengths</div>${d.strengths.map(s=>`<div style="font-size:13px;color:rgba(255,255,255,.8);margin:2px 0">· ${esc(s)}</div>`).join('')}</div>`:''}${d.gaps?.length?`<div style="margin-top:12px"><div style="font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Gaps</div>${d.gaps.map(s=>`<div style="font-size:13px;color:rgba(255,255,255,.8);margin:2px 0">· ${esc(s)}</div>`).join('')}</div>`:''}`;
   }catch(e){el.innerHTML=`<div style="color:#fca5a5">${esc(e.message)}</div>`}
 }
 
@@ -570,19 +570,19 @@ function downloadPersonaPdf(name){
   const discLabels={D:'Dominance',I:'Influence',S:'Steadiness',C:'Conscientiousness'};
   const discType=parsed.disc||'';
   const primaryDisc=discType.charAt(0).toUpperCase();
-  const hc=discColors[primaryDisc]||'#8b5cf6';
+  const hc=discColors[primaryDisc]||'#ef4444';
 
   function ckSec(title,icon,color,items){
     if(!items||!items.length)return '';
-    return `<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;overflow:hidden;margin-bottom:12px">
+    return `<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;margin-bottom:12px">
       <div style="padding:12px 16px;font-size:13px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:8px;background:${color}18;color:${color}">
         <span style="font-size:16px">${icon}</span>${esc(title)}
       </div>
-      ${items.map(x=>`<div style="padding:10px 16px;border-top:1px solid #1f1f2e;font-size:12px;color:#ccc;line-height:1.5">${esc(x)}</div>`).join('')}
+      ${items.map(x=>`<div style="padding:10px 16px;border-top:1px solid #1a1a1a;font-size:12px;color:#ccc;line-height:1.5">${esc(x)}</div>`).join('')}
     </div>`;
   }
 
-  let h=`<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#111118;color:#fff;padding:32px;min-width:700px">`;
+  let h=`<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;padding:32px;min-width:700px">`;
 
   // Header
   h+=`<div style="background:linear-gradient(135deg,${hc}cc,${hc}88);padding:24px 28px;border-radius:14px 14px 0 0;margin-bottom:0">
@@ -593,7 +593,7 @@ function downloadPersonaPdf(name){
     ${parsed.enneagram?` <span style="background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600">${esc(parsed.enneagram)}</span>`:''}
   </div>`;
 
-  h+=`<div style="background:#15151e;padding:24px 28px;border-radius:0 0 14px 14px;border:1px solid #2a2a35;border-top:none">`;
+  h+=`<div style="background:#111111;padding:24px 28px;border-radius:0 0 14px 14px;border:1px solid #1e1e1e;border-top:none">`;
 
   // DISC Card
   if(parsed.disc){
@@ -603,7 +603,7 @@ function downloadPersonaPdf(name){
       <div style="display:flex;gap:10px;margin-bottom:12px">
         ${['D','I','S','C'].map(l=>{
           const active=discType.toUpperCase().includes(l);
-          return `<div style="flex:1;text-align:center;padding:12px 8px;border-radius:10px;border:2px solid ${active?discColors[l]+'88':'#2a2a35'};background:${active?discColors[l]+'15':'#1a1a24'}">
+          return `<div style="flex:1;text-align:center;padding:12px 8px;border-radius:10px;border:2px solid ${active?discColors[l]+'88':'#1e1e1e'};background:${active?discColors[l]+'15':'#141414'}">
             <div style="font-size:22px;font-weight:800;color:${active?discColors[l]:'#444'}">${active?l:'—'}</div>
             <div style="font-size:10px;color:${active?'#aaa':'#555'};margin-top:2px">${discLabels[l]}</div>
           </div>`;
@@ -616,15 +616,15 @@ function downloadPersonaPdf(name){
 
   // Personality Traits (Spectrum Sliders)
   if(parsed.personalityTraits.length){
-    h+=`<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;overflow:hidden;margin-bottom:12px">
-      <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(139,92,246,.12);color:#a78bfa">⚖️ Personality Traits</div>
+    h+=`<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;margin-bottom:12px">
+      <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(239,68,68,.12);color:#fca5a5">⚖️ Personality Traits</div>
       ${parsed.personalityTraits.map(t=>{
         const pct=t.value<=10?t.value*10:Math.min(100,t.value);
-        return `<div style="padding:10px 16px;border-top:1px solid #1f1f2e">
+        return `<div style="padding:10px 16px;border-top:1px solid #1a1a1a">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:10px;color:#888;width:80px;text-align:right;flex-shrink:0">${esc(t.left)}</span>
-            <div style="flex:1;height:6px;background:#2a2a35;border-radius:3px;position:relative">
-              <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:${hc};border:2px solid #111118"></div>
+            <div style="flex:1;height:6px;background:#1e1e1e;border-radius:3px;position:relative">
+              <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:${hc};border:2px solid #0a0a0a"></div>
             </div>
             <span style="font-size:10px;color:#888;width:80px;flex-shrink:0">${esc(t.right)}</span>
           </div>
@@ -635,7 +635,7 @@ function downloadPersonaPdf(name){
 
   // Big Five
   if(parsed.bigFive.length){
-    const traitColors=['#a78bfa','#60a5fa','#34d399','#fbbf24','#f87171'];
+    const traitColors=['#ef4444','#10b981','#f59e0b','#06b6d4','#f87171'];
     h+=`<div style="break-inside:avoid;margin-bottom:12px">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:10px">Big Five (OCEAN)</div>
       ${parsed.bigFive.map((t,i)=>{
@@ -646,7 +646,7 @@ function downloadPersonaPdf(name){
             <span style="font-size:12px;font-weight:600;color:#fff">${esc(t.name)}</span>
             <span style="font-size:11px;font-weight:700;color:${clr}">${pct}/100</span>
           </div>
-          <div style="height:6px;background:#2a2a35;border-radius:3px;overflow:hidden">
+          <div style="height:6px;background:#1e1e1e;border-radius:3px;overflow:hidden">
             <div style="height:100%;width:${pct}%;background:${clr};border-radius:3px"></div>
           </div>
           ${t.desc?`<div style="font-size:10px;color:#777;margin-top:2px">${esc(t.desc)}</div>`:''}
@@ -659,14 +659,14 @@ function downloadPersonaPdf(name){
   if(parsed.mbti||parsed.enneagram){
     h+=`<div style="display:flex;gap:12px;margin-bottom:12px">`;
     if(parsed.mbti){
-      h+=`<div style="flex:1;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;padding:16px;text-align:center">
+      h+=`<div style="flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;text-align:center">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px">MBTI</div>
-        <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${esc(parsed.mbti)}</div>
+        <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${esc(parsed.mbti)}</div>
         ${parsed.mbtiDesc?`<div style="font-size:11px;color:#888;margin-top:6px">${esc(parsed.mbtiDesc)}</div>`:''}
       </div>`;
     }
     if(parsed.enneagram){
-      h+=`<div style="flex:1;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;padding:16px;text-align:center">
+      h+=`<div style="flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;text-align:center">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px">Enneagram</div>
         <div style="font-size:28px;font-weight:800;color:#fbbf24">${esc(parsed.enneagram)}</div>
         ${parsed.enneagramDesc?`<div style="font-size:11px;color:#888;margin-top:6px">${esc(parsed.enneagramDesc)}</div>`:''}
@@ -677,11 +677,11 @@ function downloadPersonaPdf(name){
 
   // CK Section pairs
   const pairs=[
-    [['Behavior','🎯','#60a5fa',parsed.behavior],['Energizers','⚡','#fbbf24',parsed.energizers]],
+    [['Behavior','🎯','#10b981',parsed.behavior],['Energizers','⚡','#fbbf24',parsed.energizers]],
     [['Drainers','📉','#f87171',parsed.drainers],['Strengths','🚀','#22c55e',parsed.strengthsList]],
-    [['Blind Spots','⚠️','#eab308',parsed.blindSpotsList],['First Impression','💡','#a78bfa',parsed.firstImpression]],
+    [['Blind Spots','⚠️','#eab308',parsed.blindSpotsList],['First Impression','💡','#10b981',parsed.firstImpression]],
     [['Building Trust','🤝','#f97316',parsed.buildingTrust],['Product Demo','🎤','#06b6d4',parsed.productDemo]],
-    [['Negotiating','🏷️','#ec4899',parsed.negotiating],['Pricing','📊','#8b5cf6',parsed.pricing]],
+    [['Negotiating','🏷️','#ec4899',parsed.negotiating],['Pricing','📊','#ef4444',parsed.pricing]],
     [['Drive to Action','📝','#14b8a6',parsed.driveToAction],['Following Up','⏰','#f59e0b',parsed.followingUp]],
   ];
   pairs.forEach(([a,b])=>{
@@ -689,14 +689,14 @@ function downloadPersonaPdf(name){
     if(sa||sb2)h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${sa}${sb2}</div>`;
   });
 
-  if(parsed.writingStyle.length)h+=ckSec('Writing Style — How to Email Them','✉️','#818cf8',parsed.writingStyle);
+  if(parsed.writingStyle.length)h+=ckSec('Writing Style — How to Email Them','✉️','#ef4444',parsed.writingStyle);
 
   // Text fallbacks
   ['commStyle','idealEnv','careerFit'].forEach(k=>{
     if(!parsed[k])return;
-    const cfg={commStyle:['Communication Style','💬','#c4b5fd'],idealEnv:['Ideal Environment','🌱','#93c5fd'],careerFit:['Career Fit','📈','#fca5a5']};
+    const cfg={commStyle:['Communication Style','💬','#ef4444'],idealEnv:['Ideal Environment','🌱','#10b981'],careerFit:['Career Fit','📈','#fca5a5']};
     const[t,ic,cl]=cfg[k];
-    h+=`<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;padding:16px;margin-bottom:12px">
+    h+=`<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:12px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:16px">${ic}</span><span style="font-size:13px;font-weight:700;color:${cl};text-transform:uppercase;letter-spacing:.5px">${t}</span></div>
       <div style="color:#aaa;font-size:12px;line-height:1.6">${esc(parsed[k])}</div>
     </div>`;
@@ -705,10 +705,10 @@ function downloadPersonaPdf(name){
   // Values
   if(parsed.values.length){
     const valIcons=['⭐','💰','🎯','🔒','✅','🌟','💎','🏆'];
-    const valColors=['#fbbf24','#34d399','#60a5fa','#f87171','#a78bfa','#ec4899','#06b6d4','#f97316'];
-    h+=`<div style="break-inside:avoid;background:#1a1a24;border:1px solid #2a2a35;border-radius:10px;overflow:hidden;margin-bottom:12px">
+    const valColors=['#ef4444','#10b981','#f59e0b','#06b6d4','#f87171','#ec4899','#34d399','#f97316'];
+    h+=`<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;margin-bottom:12px">
       <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(236,72,153,.12);color:#ec4899">🔑 Values</div>
-      ${parsed.values.map((v,i)=>`<div style="padding:10px 16px;border-top:1px solid #1f1f2e;display:flex;align-items:flex-start;gap:10px">
+      ${parsed.values.map((v,i)=>`<div style="padding:10px 16px;border-top:1px solid #1a1a1a;display:flex;align-items:flex-start;gap:10px">
         <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:${valColors[i%8]}18;color:${valColors[i%8]}">${valIcons[i%8]}</div>
         <div><div style="font-size:12px;font-weight:700;color:${valColors[i%8]}">${esc(v.name)}</div>${v.desc?`<div style="font-size:11px;color:#888;margin-top:2px">${esc(v.desc)}</div>`:''}</div>
       </div>`).join('')}
@@ -717,8 +717,8 @@ function downloadPersonaPdf(name){
 
   // Bottom Line
   if(parsed.bottomLine){
-    h+=`<div style="break-inside:avoid;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(96,165,250,.12));border:1px solid rgba(139,92,246,.25);border-radius:10px;padding:16px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:.5px">Bottom Line</div>
+    h+=`<div style="break-inside:avoid;background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(16,185,129,.08));border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:16px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:.5px">Bottom Line</div>
       <div style="color:#ddd;font-size:13px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
     </div>`;
   }
@@ -728,7 +728,7 @@ function downloadPersonaPdf(name){
 
   // Create hidden container, render, export, remove
   const wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-9999px;top:0';wrap.innerHTML=h;document.body.appendChild(wrap);
-  const opt={margin:[0.3,0.4],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,backgroundColor:'#111118',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
+  const opt={margin:[0.3,0.4],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,backgroundColor:'#0a0a0a',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
   html2pdf().set(opt).from(wrap.firstChild).save().then(()=>setTimeout(()=>wrap.remove(),2000));
 }
 
@@ -747,9 +747,9 @@ function renderPersonaReport(md,name){
   const discLabels={D:'Dominance',I:'Influence',S:'Steadiness',C:'Conscientiousness'};
   const discType=parsed.disc||'';
   const primaryDisc=discType.charAt(0).toUpperCase();
-  const headerColor=discColors[primaryDisc]||'#8b5cf6';
+  const headerColor=discColors[primaryDisc]||'#ef4444';
 
-  let html=`<div id="personaReportBody" style="background:#111118;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1)">`;
+  let html=`<div id="personaReportBody" style="background:#0a0a0a;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1)">`;
 
   // ── HEADER BAND ──
   html+=`<div style="background:linear-gradient(135deg,${headerColor}cc,${headerColor}88);padding:28px 32px;position:relative;overflow:hidden">
@@ -797,7 +797,7 @@ function renderPersonaReport(md,name){
 
   // ── BIG FIVE CARD ──
   if(parsed.bigFive.length){
-    const traitColors=['#a78bfa','#60a5fa','#34d399','#fbbf24','#f87171'];
+    const traitColors=['#ef4444','#10b981','#f59e0b','#06b6d4','#f87171'];
     html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
       <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:16px">Big Five (OCEAN)</div>
       ${parsed.bigFive.map((t,i)=>{
@@ -822,7 +822,7 @@ function renderPersonaReport(md,name){
     if(parsed.mbti){
       html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px;text-align:center">
         <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:12px">MBTI</div>
-        <div style="font-size:36px;font-weight:800;letter-spacing:2px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${esc(parsed.mbti)}</div>
+        <div style="font-size:36px;font-weight:800;letter-spacing:2px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${esc(parsed.mbti)}</div>
         ${parsed.mbtiDesc?`<div style="font-size:13px;color:rgba(255,255,255,.6);margin-top:8px">${esc(parsed.mbtiDesc)}</div>`:''}
       </div>`;
     }
@@ -841,7 +841,7 @@ function renderPersonaReport(md,name){
     html+=`<div class="ck-grid">`;
     if(parsed.strengthsList.length){
       html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px">
-        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#86efac;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>🚀</span>Key Strengths</div>
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6ee7b7;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>🚀</span>Key Strengths</div>
         ${parsed.strengthsList.slice(0,4).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${esc(s)}</div>`).join('')}
       </div>`;
     }
@@ -856,8 +856,8 @@ function renderPersonaReport(md,name){
 
   // ── BOTTOM LINE ──
   if(parsed.bottomLine){
-    html+=`<div style="background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(96,165,250,.12));border:1px solid rgba(139,92,246,.25);border-radius:14px;padding:24px">
-      <div style="font-size:15px;font-weight:700;margin-bottom:10px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:.5px">Bottom Line</div>
+    html+=`<div style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(16,185,129,.08));border:1px solid rgba(239,68,68,.2);border-radius:14px;padding:24px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:10px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:.5px">Bottom Line</div>
       <div style="color:rgba(255,255,255,.9);font-size:15px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
     </div>`;
   }
@@ -950,8 +950,8 @@ function parsePersonaMd(md){
 }
 function formatSectionText(txt){
   if(!txt)return '';
-  return esc(txt).replace(/^[-•]\s+(.+)$/gm,'<div style="margin:6px 0;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid rgba(139,92,246,.4)">$1</div>')
-    .replace(/^(\d+)\.\s+(.+)$/gm,'<div style="margin:6px 0;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:8px"><b style="color:#a78bfa">$1.</b> $2</div>')
+  return esc(txt).replace(/^[-•]\s+(.+)$/gm,'<div style="margin:6px 0;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid rgba(239,68,68,.4)">$1</div>')
+    .replace(/^(\d+)\.\s+(.+)$/gm,'<div style="margin:6px 0;padding:8px 12px;background:rgba(255,255,255,.02);border-radius:8px"><b style="color:#ef4444">$1.</b> $2</div>')
     .replace(/\n/g,'<br>');
 }
 
@@ -976,7 +976,7 @@ async function toggleAutoPersonality(){
 function wfCard(name,desc,on,locked,fn){
   return `<div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;display:flex;justify-content:space-between;align-items:center;gap:16px">
     <div><div style="font-weight:700;font-size:15px">${esc(name)}</div><div style="color:rgba(255,255,255,.55);font-size:13px;margin-top:4px">${esc(desc)}</div></div>
-    <div><span style="display:inline-block;padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;${on?'background:rgba(34,197,94,.15);color:#86efac':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)'}">${on?'Active':'Off'}</span>${!locked&&fn?` <button class="btn btn-ghost btn-sm" onclick="${fn}" style="margin-left:8px">${on?'Disable':'Enable'}</button>`:''}</div>
+    <div><span style="display:inline-block;padding:5px 12px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;${on?'background:rgba(34,197,94,.15);color:#6ee7b7':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)'}">${on?'Active':'Off'}</span>${!locked&&fn?` <button class="btn btn-ghost btn-sm" onclick="${fn}" style="margin-left:8px">${on?'Disable':'Enable'}</button>`:''}</div>
   </div>`;
 }
 async function toggleAutoSync(){
@@ -1017,7 +1017,7 @@ function renderSettings(){
   const ih=$('indChips');if(!ih)return;
   ih.innerHTML=INDUSTRIES.map(i=>{
     const on=_settings.industries?.includes(i);
-    return `<span class="tag ${on?'tag-open':''}" style="cursor:pointer;padding:8px 14px;font-size:13px;text-transform:none;letter-spacing:0;${on?'background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.7)'}" onclick="toggleInd('${i.replace(/'/g,"\\'")}')">${i}${on?' ✓':''}</span>`;
+    return `<span class="tag ${on?'tag-open':''}" style="cursor:pointer;padding:8px 14px;font-size:13px;text-transform:none;letter-spacing:0;${on?'background:#ef4444;color:#fff':'background:rgba(255,255,255,.04);color:rgba(255,255,255,.6)'}" onclick="toggleInd('${i.replace(/'/g,"\\'")}')">${i}${on?' ✓':''}</span>`;
   }).join('');
   const sh=$('srcChips');
   sh.innerHTML=SOURCES.map(s=>{
@@ -1025,7 +1025,7 @@ function renderSettings(){
     const hasKey=s.free||(s.key==='adzuna'?(_settings.adzuna_app_id&&_settings.adzuna_app_key):s.key==='rapidapi'?_settings.rapidapi_key:true);
     const disabled=!s.free&&!hasKey;
     const bg=disabled?'background:rgba(255,255,255,.03);color:rgba(255,255,255,.35);cursor:not-allowed':on?'background:linear-gradient(135deg,#34d399,#10b981);color:#022c22;cursor:pointer':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);cursor:pointer';
-    const badge=s.free?'<span style="font-size:10px;background:rgba(34,197,94,.15);color:#86efac;padding:2px 6px;border-radius:4px;margin-left:6px">FREE</span>':disabled?'<span style="font-size:10px;background:rgba(234,179,8,.15);color:#fde68a;padding:2px 6px;border-radius:4px;margin-left:6px">KEY REQUIRED</span>':'<span style="font-size:10px;background:rgba(139,92,246,.15);color:#c4b5fd;padding:2px 6px;border-radius:4px;margin-left:6px">KEY SET</span>';
+    const badge=s.free?'<span style="font-size:10px;background:rgba(34,197,94,.15);color:#6ee7b7;padding:2px 6px;border-radius:4px;margin-left:6px">FREE</span>':disabled?'<span style="font-size:10px;background:rgba(234,179,8,.15);color:#fde68a;padding:2px 6px;border-radius:4px;margin-left:6px">KEY REQUIRED</span>':'<span style="font-size:10px;background:rgba(16,185,129,.15);color:#6ee7b7;padding:2px 6px;border-radius:4px;margin-left:6px">KEY SET</span>';
     const onClick=disabled?'alert("Add your '+s.key+' API key in the API Keys section below, then enable.")':`toggleSrc('${s.id}')`;
     return `<span class="tag" style="padding:10px 14px;font-size:13px;text-transform:none;letter-spacing:0;${bg}" onclick="${onClick}"><b>${s.name}</b>${badge} — ${s.desc}${on?' ✓':''}</span>`;
   }).join('');
@@ -1036,13 +1036,13 @@ function renderSettings(){
     <div style="margin-bottom:20px;padding:14px;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);border-radius:10px;font-size:13px;color:#fde68a"><b>Keyed sources are disabled by default.</b> Paste keys below to unlock Indeed + LinkedIn + Glassdoor coverage. Stored in Supabase, never sent to the browser from anywhere else.</div>
     <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">Adzuna <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Free tier · 1000 calls/mo</span></h3>
-      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://developer.adzuna.com/signup" target="_blank" style="color:#a78bfa">developer.adzuna.com/signup</a>. You'll get an App ID and App Key.</p>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://developer.adzuna.com/signup" target="_blank" style="color:#ef4444">developer.adzuna.com/signup</a>. You'll get an App ID and App Key.</p>
       <div class="field"><label>App ID</label><input id="keyAdzunaId" placeholder="e.g. 12345abc" value="${esc(_settings.adzuna_app_id||'')}"></div>
       <div class="field"><label>App Key</label><input id="keyAdzunaKey" type="password" placeholder="paste key" value="${esc(_settings.adzuna_app_key||'')}"></div>
     </div>
     <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">JSearch via RapidAPI <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Free tier · ~200 calls/mo</span></h3>
-      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" style="color:#a78bfa">rapidapi.com/jsearch</a>. Subscribe to the Basic (free) plan. Aggregates Indeed, LinkedIn, Glassdoor, ZipRecruiter.</p>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" style="color:#ef4444">rapidapi.com/jsearch</a>. Subscribe to the Basic (free) plan. Aggregates Indeed, LinkedIn, Glassdoor, ZipRecruiter.</p>
       <div class="field"><label>RapidAPI Key</label><input id="keyRapidApi" type="password" placeholder="paste X-RapidAPI-Key" value="${esc(_settings.rapidapi_key||'')}"></div>
     </div>`;
   }
@@ -1162,7 +1162,7 @@ function renderFeed(){
   list.slice(0,50).forEach(j=>{
     const row=document.createElement('div');
     row.style.cssText='padding:16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:16px;align-items:center';
-    row.innerHTML=`<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:15px">${esc(j.title)}</div><div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:2px">${esc(j.company)} · ${esc(j.location||'Remote')} · <span style="color:#a78bfa">${esc(j.type||'full-time')}</span> · <span style="font-size:11px;padding:2px 8px;background:rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7)">${esc(j.source)}</span></div><div style="margin-top:6px">${(j.tags||[]).slice(0,5).map(t=>`<span class="tag tag-open" style="margin-right:4px">${esc(t)}</span>`).join('')}</div></div><div style="display:flex;gap:8px;flex-shrink:0"><a href="${esc(j.url)}" target="_blank" class="btn btn-ghost btn-sm">View</a><button class="btn btn-primary btn-sm">+ Import</button></div>`;
+    row.innerHTML=`<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:15px">${esc(j.title)}</div><div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:2px">${esc(j.company)} · ${esc(j.location||'Remote')} · <span style="color:#ef4444">${esc(j.type||'full-time')}</span> · <span style="font-size:11px;padding:2px 8px;background:rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7)">${esc(j.source)}</span></div><div style="margin-top:6px">${(j.tags||[]).slice(0,5).map(t=>`<span class="tag tag-open" style="margin-right:4px">${esc(t)}</span>`).join('')}</div></div><div style="display:flex;gap:8px;flex-shrink:0"><a href="${esc(j.url)}" target="_blank" class="btn btn-ghost btn-sm">View</a><button class="btn btn-primary btn-sm">+ Import</button></div>`;
     row.querySelector('button.btn-primary').onclick=()=>importJob(j);
     host.appendChild(row);
   });
