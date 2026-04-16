@@ -84,7 +84,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .hidden{display:none!important}
 .empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.35);font-size:14px}
 @media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0;padding:20px}.pipeline{grid-template-columns:repeat(6,260px)}}
-/* Crystal Knows Style Sections */
+/* Profile Report Sections */
 .ck-section{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden}
 .ck-section-head{padding:16px 20px;font-size:15px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
 .ck-section-body{padding:0}
@@ -241,7 +241,7 @@ Skills: Figma, Design Systems, User Research, Prototyping, Sketch..."></textarea
       </div>
       <div class="panel">
         <h2>Personality Profiler</h2>
-        <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:16px">Upload a resume, drop a LinkedIn / social profile URL, or pick a saved candidate. Returns DISC (Crystal Knows format), Big Five, MBTI, Enneagram, strengths, blind spots, communication style, ideal environment, and career fit.</p>
+        <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:16px">Upload a resume, drop a LinkedIn / social profile URL, or pick a saved candidate. Returns DISC, Big Five, MBTI, Enneagram, strengths, blind spots, communication style, ideal environment, and career fit.</p>
         <div class="field"><label>Profile URL (LinkedIn, social, article — optional)</label><input id="persUrl" placeholder="https://www.linkedin.com/in/..."></div>
         <div class="field"><label>Resume / profile text (paste, or leave blank to use URL alone)</label><textarea id="persText" rows="8" placeholder="Paste resume, bio, article, or any profile content..."></textarea></div>
         <div class="field"><label>Or pick a saved candidate (uses their profile data)</label><select id="persSel"></select></div>
@@ -564,7 +564,7 @@ async function runPersonality(){
 }
 function copyPersona(){if(window._lastPersonaMd){navigator.clipboard.writeText(window._lastPersonaMd);alert('Report copied to clipboard')}}
 
-/* ---------- PDF Export (Full Crystal Knows Report) ---------- */
+/* ---------- PDF Export (Full Personality Report) ---------- */
 function downloadPersonaPdf(name){
   const md=window._lastPersonaMd;if(!md)return alert('No report to export');
   const parsed=parsePersonaMd(md);
@@ -866,7 +866,7 @@ function renderPersonaReport(md,name){
 
   // ── CTA: Download full report ──
   html+=`<div style="text-align:center;padding:20px 0">
-    <button class="btn btn-primary" style="width:auto;padding:14px 36px;font-size:15px;font-weight:700;letter-spacing:.3px" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download Full Crystal Knows Report</button>
+    <button class="btn btn-primary" style="width:auto;padding:14px 36px;font-size:15px;font-weight:700;letter-spacing:.3px" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download Full Report</button>
     <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:10px">Includes: Personality Traits, Behavior, Energizers, Drainers, Communication, Negotiating, Values & more</div>
   </div>`;
 
