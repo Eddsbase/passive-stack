@@ -564,173 +564,174 @@ async function runPersonality(){
 }
 function copyPersona(){if(window._lastPersonaMd){navigator.clipboard.writeText(window._lastPersonaMd);alert('Report copied to clipboard')}}
 
-/* ---------- PDF Export (Full Personality Report) ---------- */
+/* ---------- PDF Export (Full Personality Report — Print-Ready White) ---------- */
 function downloadPersonaPdf(name){
   const md=window._lastPersonaMd;if(!md)return alert('No report to export');
   const parsed=parsePersonaMd(md);
-  const discColors={D:'#ef4444',I:'#eab308',S:'#22c55e',C:'#3b82f6'};
+  const discColors={D:'#dc2626',I:'#ca8a04',S:'#16a34a',C:'#2563eb'};
   const discLabels={D:'Dominance',I:'Influence',S:'Steadiness',C:'Conscientiousness'};
   const discType=parsed.disc||'';
   const primaryDisc=discType.charAt(0).toUpperCase();
-  const hc=discColors[primaryDisc]||'#ef4444';
+  const hc=discColors[primaryDisc]||'#dc2626';
+  const F='font-family:Helvetica,Arial,sans-serif;';
 
-  function ckSec(title,icon,color,items){
+  function sec(title,color,items){
     if(!items||!items.length)return '';
-    return `<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;margin-bottom:12px">
-      <div style="padding:12px 16px;font-size:13px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:8px;background:${color}18;color:${color}">
-        <span style="font-size:16px">${icon}</span>${esc(title)}
-      </div>
-      ${items.map(x=>`<div style="padding:10px 16px;border-top:1px solid #1a1a1a;font-size:12px;color:#ccc;line-height:1.5">${esc(x)}</div>`).join('')}
+    return `<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
+      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${color};color:#fff">${esc(title)}</div>
+      ${items.map(x=>`<div style="${F}padding:9px 14px;border-top:1px solid #f3f4f6;font-size:10px;color:#374151;line-height:1.6">${esc(x)}</div>`).join('')}
     </div>`;
   }
 
-  let h=`<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;padding:32px;min-width:700px">`;
+  let h=`<div style="${F}background:#fff;color:#111;padding:0;width:720px">`;
 
-  // Header
-  h+=`<div style="background:linear-gradient(135deg,${hc}cc,${hc}88);padding:24px 28px;border-radius:14px 14px 0 0;margin-bottom:0">
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.8);margin-bottom:4px">Personality Assessment — Full Report</div>
-    <div style="font-size:24px;font-weight:800;color:#fff;margin-bottom:4px">${esc(name||'Profile')}</div>
-    ${discType?`<span style="background:rgba(0,0,0,.3);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:700">${esc(discType)} Profile</span>`:''}
-    ${parsed.mbti?` <span style="background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600">${esc(parsed.mbti)}</span>`:''}
-    ${parsed.enneagram?` <span style="background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600">${esc(parsed.enneagram)}</span>`:''}
+  // ── HEADER ──
+  h+=`<div style="background:${hc};padding:28px 32px;color:#fff">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;opacity:.8;margin-bottom:4px">RecruitDNA Personality Assessment</div>
+    <div style="${F}font-size:26px;font-weight:800;margin-bottom:6px">${esc(name||'Profile')}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${discType?`<span style="background:rgba(0,0,0,.25);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700">${esc(discType)}</span>`:''}
+      ${parsed.mbti?`<span style="background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:600">${esc(parsed.mbti)}</span>`:''}
+      ${parsed.enneagram?`<span style="background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:600">${esc(parsed.enneagram)}</span>`:''}
+    </div>
   </div>`;
 
-  h+=`<div style="background:#111111;padding:24px 28px;border-radius:0 0 14px 14px;border:1px solid #1e1e1e;border-top:none">`;
+  h+=`<div style="padding:24px 32px">`;
 
-  // DISC Card
+  // ── DISC ──
   if(parsed.disc){
-    h+=`<div style="margin-bottom:20px">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:6px">DISC Profile</div>
-      ${parsed.discTypeName?`<div style="font-size:18px;font-weight:800;color:${hc};margin-bottom:12px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:14px;color:#888">(${esc(discType)})</span></div>`:''}
-      <div style="display:flex;gap:10px;margin-bottom:12px">
+    h+=`<div style="margin-bottom:18px">
+      <div style="${F}font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px">DISC Profile</div>
+      ${parsed.discTypeName?`<div style="${F}font-size:18px;font-weight:800;color:${hc};margin-bottom:10px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:13px;color:#9ca3af">(${esc(discType)})</span></div>`:''}
+      <div style="display:flex;gap:8px;margin-bottom:10px">
         ${['D','I','S','C'].map(l=>{
           const active=discType.toUpperCase().includes(l);
-          return `<div style="flex:1;text-align:center;padding:12px 8px;border-radius:10px;border:2px solid ${active?discColors[l]+'88':'#1e1e1e'};background:${active?discColors[l]+'15':'#141414'}">
-            <div style="font-size:22px;font-weight:800;color:${active?discColors[l]:'#444'}">${active?l:'—'}</div>
-            <div style="font-size:10px;color:${active?'#aaa':'#555'};margin-top:2px">${discLabels[l]}</div>
+          return `<div style="flex:1;text-align:center;padding:10px 6px;border-radius:8px;border:2px solid ${active?discColors[l]:'#e5e7eb'};background:${active?discColors[l]+'12':'#fafafa'}">
+            <div style="${F}font-size:20px;font-weight:800;color:${active?discColors[l]:'#d1d5db'}">${active?l:'—'}</div>
+            <div style="${F}font-size:9px;color:${active?'#6b7280':'#d1d5db'};margin-top:2px">${discLabels[l]}</div>
           </div>`;
         }).join('')}
       </div>
-      ${parsed.discDesc?`<div style="color:#aaa;font-size:12px;line-height:1.6">${esc(parsed.discDesc)}</div>`:''}
-      ${parsed.traitBadges.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${parsed.traitBadges.map(b=>`<span style="padding:4px 12px;border-radius:16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:${hc};border:1.5px solid ${hc}55">${esc(b)}</span>`).join('')}</div>`:''}
+      ${parsed.discDesc?`<div style="${F}color:#6b7280;font-size:10px;line-height:1.6">${esc(parsed.discDesc)}</div>`:''}
+      ${parsed.traitBadges.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${parsed.traitBadges.map(b=>`<span style="${F}padding:3px 10px;border-radius:12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${hc};border:1.5px solid ${hc}">${esc(b)}</span>`).join('')}</div>`:''}
     </div>`;
   }
 
-  // Personality Traits (Spectrum Sliders)
+  // ── PERSONALITY TRAITS (Spectrums) ──
   if(parsed.personalityTraits.length){
-    h+=`<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;margin-bottom:12px">
-      <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(239,68,68,.12);color:#fca5a5">⚖️ Personality Traits</div>
+    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
+      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${hc};color:#fff">Personality Traits</div>
       ${parsed.personalityTraits.map(t=>{
         const pct=t.value<=10?t.value*10:Math.min(100,t.value);
-        return `<div style="padding:10px 16px;border-top:1px solid #1a1a1a">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:10px;color:#888;width:80px;text-align:right;flex-shrink:0">${esc(t.left)}</span>
-            <div style="flex:1;height:6px;background:#1e1e1e;border-radius:3px;position:relative">
-              <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:${hc};border:2px solid #0a0a0a"></div>
-            </div>
-            <span style="font-size:10px;color:#888;width:80px;flex-shrink:0">${esc(t.right)}</span>
+        return `<div style="padding:8px 14px;border-top:1px solid #f3f4f6;display:flex;align-items:center;gap:8px">
+          <span style="${F}font-size:9px;color:#6b7280;width:75px;text-align:right;flex-shrink:0">${esc(t.left)}</span>
+          <div style="flex:1;height:5px;background:#e5e7eb;border-radius:3px;position:relative">
+            <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:${hc}"></div>
           </div>
+          <span style="${F}font-size:9px;color:#6b7280;width:75px;flex-shrink:0">${esc(t.right)}</span>
         </div>`;
       }).join('')}
     </div>`;
   }
 
-  // Big Five
+  // ── BIG FIVE ──
   if(parsed.bigFive.length){
-    const traitColors=['#ef4444','#10b981','#f59e0b','#06b6d4','#f87171'];
-    h+=`<div style="break-inside:avoid;margin-bottom:12px">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:10px">Big Five (OCEAN)</div>
+    const b5c=['#dc2626','#059669','#d97706','#0891b2','#e11d48'];
+    h+=`<div style="break-inside:avoid;margin-bottom:14px">
+      <div style="${F}font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:8px">Big Five (OCEAN)</div>
       ${parsed.bigFive.map((t,i)=>{
         const pct=Math.max(0,Math.min(100,parseInt(t.score)||50));
-        const clr=traitColors[i%5];
-        return `<div style="margin-bottom:10px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-            <span style="font-size:12px;font-weight:600;color:#fff">${esc(t.name)}</span>
-            <span style="font-size:11px;font-weight:700;color:${clr}">${pct}/100</span>
+        const c=b5c[i%5];
+        return `<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="${F}font-size:10px;font-weight:600;color:#374151">${esc(t.name)}</span>
+            <span style="${F}font-size:10px;font-weight:700;color:${c}">${pct}/100</span>
           </div>
-          <div style="height:6px;background:#1e1e1e;border-radius:3px;overflow:hidden">
-            <div style="height:100%;width:${pct}%;background:${clr};border-radius:3px"></div>
+          <div style="height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${c};border-radius:3px"></div>
           </div>
-          ${t.desc?`<div style="font-size:10px;color:#777;margin-top:2px">${esc(t.desc)}</div>`:''}
+          ${t.desc?`<div style="${F}font-size:9px;color:#9ca3af;margin-top:2px">${esc(t.desc)}</div>`:''}
         </div>`;
       }).join('')}
     </div>`;
   }
 
-  // MBTI + Enneagram
+  // ── MBTI + ENNEAGRAM ──
   if(parsed.mbti||parsed.enneagram){
-    h+=`<div style="display:flex;gap:12px;margin-bottom:12px">`;
+    h+=`<div style="display:flex;gap:10px;margin-bottom:14px">`;
     if(parsed.mbti){
-      h+=`<div style="flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;text-align:center">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px">MBTI</div>
-        <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">${esc(parsed.mbti)}</div>
-        ${parsed.mbtiDesc?`<div style="font-size:11px;color:#888;margin-top:6px">${esc(parsed.mbtiDesc)}</div>`:''}
+      h+=`<div style="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:14px;text-align:center">
+        <div style="${F}font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px">MBTI</div>
+        <div style="${F}font-size:26px;font-weight:800;color:${hc}">${esc(parsed.mbti)}</div>
+        ${parsed.mbtiDesc?`<div style="${F}font-size:9px;color:#9ca3af;margin-top:4px">${esc(parsed.mbtiDesc)}</div>`:''}
       </div>`;
     }
     if(parsed.enneagram){
-      h+=`<div style="flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;text-align:center">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:8px">Enneagram</div>
-        <div style="font-size:28px;font-weight:800;color:#fbbf24">${esc(parsed.enneagram)}</div>
-        ${parsed.enneagramDesc?`<div style="font-size:11px;color:#888;margin-top:6px">${esc(parsed.enneagramDesc)}</div>`:''}
+      h+=`<div style="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:14px;text-align:center">
+        <div style="${F}font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px">Enneagram</div>
+        <div style="${F}font-size:26px;font-weight:800;color:#d97706">${esc(parsed.enneagram)}</div>
+        ${parsed.enneagramDesc?`<div style="${F}font-size:9px;color:#9ca3af;margin-top:4px">${esc(parsed.enneagramDesc)}</div>`:''}
       </div>`;
     }
     h+=`</div>`;
   }
 
-  // CK Section pairs
+  // ── SECTION PAIRS ──
   const pairs=[
-    [['Behavior','🎯','#10b981',parsed.behavior],['Energizers','⚡','#fbbf24',parsed.energizers]],
-    [['Drainers','📉','#f87171',parsed.drainers],['Strengths','🚀','#22c55e',parsed.strengthsList]],
-    [['Blind Spots','⚠️','#eab308',parsed.blindSpotsList],['First Impression','💡','#10b981',parsed.firstImpression]],
-    [['Building Trust','🤝','#f97316',parsed.buildingTrust],['Product Demo','🎤','#06b6d4',parsed.productDemo]],
-    [['Negotiating','🏷️','#ec4899',parsed.negotiating],['Pricing','📊','#ef4444',parsed.pricing]],
-    [['Drive to Action','📝','#14b8a6',parsed.driveToAction],['Following Up','⏰','#f59e0b',parsed.followingUp]],
+    [['Behavior','#2563eb',parsed.behavior],['Energizers','#d97706',parsed.energizers]],
+    [['Drainers','#dc2626',parsed.drainers],['Strengths','#059669',parsed.strengthsList]],
+    [['Blind Spots','#d97706',parsed.blindSpotsList],['First Impression','#7c3aed',parsed.firstImpression]],
+    [['Building Trust','#ea580c',parsed.buildingTrust],['Product Demo','#0891b2',parsed.productDemo]],
+    [['Negotiating','#be185d',parsed.negotiating],['Pricing','#dc2626',parsed.pricing]],
+    [['Drive to Action','#0d9488',parsed.driveToAction],['Following Up','#d97706',parsed.followingUp]],
   ];
   pairs.forEach(([a,b])=>{
-    const sa=ckSec(...a),sb2=ckSec(...b);
-    if(sa||sb2)h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${sa}${sb2}</div>`;
+    const sa=sec(a[0],a[1],a[2]),sb2=sec(b[0],b[1],b[2]);
+    if(sa||sb2)h+=`<div style="display:flex;gap:10px">${sa?`<div style="flex:1">${sa}</div>`:'<div style="flex:1"></div>'}${sb2?`<div style="flex:1">${sb2}</div>`:'<div style="flex:1"></div>'}</div>`;
   });
 
-  if(parsed.writingStyle.length)h+=ckSec('Writing Style — How to Email Them','✉️','#ef4444',parsed.writingStyle);
+  if(parsed.writingStyle.length)h+=sec('Writing Style','#dc2626',parsed.writingStyle);
 
-  // Text fallbacks
+  // ── TEXT SECTIONS ──
   ['commStyle','idealEnv','careerFit'].forEach(k=>{
     if(!parsed[k])return;
-    const cfg={commStyle:['Communication Style','💬','#ef4444'],idealEnv:['Ideal Environment','🌱','#10b981'],careerFit:['Career Fit','📈','#fca5a5']};
-    const[t,ic,cl]=cfg[k];
-    h+=`<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:16px">${ic}</span><span style="font-size:13px;font-weight:700;color:${cl};text-transform:uppercase;letter-spacing:.5px">${t}</span></div>
-      <div style="color:#aaa;font-size:12px;line-height:1.6">${esc(parsed[k])}</div>
+    const cfg={commStyle:['Communication Style','#dc2626'],idealEnv:['Ideal Environment','#059669'],careerFit:['Career Fit','#2563eb']};
+    const[t,cl]=cfg[k];
+    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
+      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${cl};color:#fff">${t}</div>
+      <div style="${F}padding:12px 14px;font-size:10px;color:#374151;line-height:1.7">${esc(parsed[k])}</div>
     </div>`;
   });
 
-  // Values
+  // ── VALUES ──
   if(parsed.values.length){
-    const valIcons=['⭐','💰','🎯','🔒','✅','🌟','💎','🏆'];
-    const valColors=['#ef4444','#10b981','#f59e0b','#06b6d4','#f87171','#ec4899','#34d399','#f97316'];
-    h+=`<div style="break-inside:avoid;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden;margin-bottom:12px">
-      <div style="padding:12px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;background:rgba(236,72,153,.12);color:#ec4899">🔑 Values</div>
-      ${parsed.values.map((v,i)=>`<div style="padding:10px 16px;border-top:1px solid #1a1a1a;display:flex;align-items:flex-start;gap:10px">
-        <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:${valColors[i%8]}18;color:${valColors[i%8]}">${valIcons[i%8]}</div>
-        <div><div style="font-size:12px;font-weight:700;color:${valColors[i%8]}">${esc(v.name)}</div>${v.desc?`<div style="font-size:11px;color:#888;margin-top:2px">${esc(v.desc)}</div>`:''}</div>
+    const vc=['#dc2626','#059669','#d97706','#0891b2','#e11d48','#7c3aed','#0d9488','#ea580c'];
+    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
+      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:#7c3aed;color:#fff">Core Values</div>
+      ${parsed.values.map((v,i)=>`<div style="padding:9px 14px;border-top:1px solid #f3f4f6;display:flex;gap:8px;align-items:baseline">
+        <span style="${F}font-size:10px;font-weight:700;color:${vc[i%8]}">${esc(v.name)}</span>
+        ${v.desc?`<span style="${F}font-size:9px;color:#6b7280">— ${esc(v.desc)}</span>`:''}
       </div>`).join('')}
     </div>`;
   }
 
-  // Bottom Line
+  // ── BOTTOM LINE ──
   if(parsed.bottomLine){
-    h+=`<div style="break-inside:avoid;background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(16,185,129,.08));border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:16px;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:.5px">Bottom Line</div>
-      <div style="color:#ddd;font-size:13px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
+    h+=`<div style="break-inside:avoid;background:#fef2f2;border:2px solid ${hc};border-radius:8px;padding:16px;margin-bottom:10px">
+      <div style="${F}font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${hc};margin-bottom:6px">Bottom Line</div>
+      <div style="${F}color:#1f2937;font-size:11px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
     </div>`;
   }
 
-  h+=`<div style="text-align:center;padding:12px 0;font-size:10px;color:#555">Generated by RecruitDNA · ${new Date().toLocaleDateString()}</div>`;
+  // ── FOOTER ──
+  h+=`<div style="text-align:center;padding:16px 0 4px;border-top:1px solid #e5e7eb;margin-top:10px">
+    <span style="${F}font-size:9px;color:#9ca3af">Generated by RecruitDNA &middot; ${new Date().toLocaleDateString()}</span>
+  </div>`;
+
   h+=`</div></div>`;
 
-  // Create hidden container, render, export, remove
   const wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-9999px;top:0';wrap.innerHTML=h;document.body.appendChild(wrap);
-  const opt={margin:[0.3,0.4],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,backgroundColor:'#0a0a0a',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
+  const opt={margin:[0.3,0.4],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#ffffff',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
   html2pdf().set(opt).from(wrap.firstChild).save().then(()=>setTimeout(()=>wrap.remove(),2000));
 }
 
