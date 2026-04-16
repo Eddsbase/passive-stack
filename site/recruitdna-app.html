@@ -550,7 +550,15 @@ async function runPersonality(){
     if(c)text=`${c.full_name}\nTitle: ${c.current_title||''}\nCompany: ${c.current_company||''}\nLocation: ${c.location||''}\nSkills: ${(c.skills||[]).join(', ')}\nYears: ${c.experience_years||''}\nSummary: ${c.summary||''}\nNotes: ${c.notes||''}`;
   }
   if(!text&&!url)return alert('Provide a URL, paste profile text, or pick a saved candidate');
-  const el=$('persResult');el.classList.remove('hidden');el.innerHTML='<div class="panel"><div style="color:rgba(255,255,255,.7)">Analysing with Claude Sonnet'+(url?' (fetching URL via web search, can take 10-30s)':'')+'...</div></div>';
+  const el=$('persResult');el.classList.remove('hidden');el.innerHTML=`<div class="panel" style="text-align:center;padding:48px 24px">
+    <div style="display:inline-block;margin-bottom:20px">
+      <svg width="48" height="48" viewBox="0 0 48 48" style="animation:rdna-spin 1.2s linear infinite"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/><circle cx="24" cy="24" r="20" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="80 45" stroke-linecap="round"/></svg>
+    </div>
+    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px" id="_persPhase">Scanning profile data</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.35)">This typically takes 5–15 seconds</div>
+    <style>@keyframes rdna-spin{to{transform:rotate(360deg)}}</style>
+    <script>!function(){var ph=["Scanning profile data","Mapping personality dimensions","Evaluating communication patterns","Generating behavioral insights","Compiling assessment report"],i=0,el=document.getElementById("_persPhase");if(el){var iv=setInterval(function(){i++;if(i<ph.length&&el){el.textContent=ph[i]}else{clearInterval(iv)}},2500)}}()</script>
+  </div>`;
   try{
     const body={};if(text)body.profile=text;if(url)body.url=url;
     const p=await callAgent('ai-personality-profile',body);
