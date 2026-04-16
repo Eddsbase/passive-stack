@@ -106,6 +106,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 @media(max-width:700px){.ck-grid{grid-template-columns:1fr}}
 .ck-trait-badges{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 16px}
 .ck-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border:1.5px solid}
+/* ── Custom Modal Overlay ── */
+.rdna-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.rdna-overlay.show{opacity:1}
+.rdna-modal{background:#141414;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 32px;min-width:340px;max-width:440px;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.rdna-modal h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+.rdna-modal p{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:18px}
+.rdna-modal input,.rdna-modal select{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-size:14px;outline:none;margin-bottom:18px;transition:border-color .2s}
+.rdna-modal input:focus,.rdna-modal select:focus{border-color:#ef4444}
+.rdna-modal select option{background:#1a1a1a;color:#fff}
+.rdna-modal .rdna-btns{display:flex;gap:10px;justify-content:flex-end}
+.rdna-modal .rdna-btns button{padding:9px 22px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:.5px;transition:all .15s}
+.rdna-modal .rdna-btn-cancel{background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)}
+.rdna-modal .rdna-btn-cancel:hover{background:rgba(255,255,255,.1);color:#fff}
+.rdna-modal .rdna-btn-ok{background:#ef4444;color:#fff}
+.rdna-modal .rdna-btn-ok:hover{background:#dc2626}
+/* ── Toast ── */
+.rdna-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#141414;border:1px solid rgba(255,255,255,.1);color:#fff;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:10000;opacity:0;transition:all .25s;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.rdna-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.rdna-toast.success{border-color:rgba(16,185,129,.4)}
+.rdna-toast.error{border-color:rgba(239,68,68,.4)}
 </style>
 </head>
 <body>
@@ -122,7 +142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     <div class="nav-item" data-view="discover"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Discover Jobs</div>
     <div class="nav-item" data-view="import"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Import Profile</div>
     <div class="nav-item" data-view="ai"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>AI Tools</div>
-    <div class="nav-item" data-view="workflows"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Workflows</div>
+    <div class="nav-item" data-view="workflows"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Analytics</div>
     <div class="nav-item" data-view="settings"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Settings</div>
     <div class="user">
       <div class="email" id="userEmail" style="color:rgba(239,68,68,.7);font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:11px">Demo workspace</div>
@@ -133,17 +153,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     <!-- DASHBOARD -->
     <section class="view" id="view-dashboard">
       <div class="page-head">
-        <div><h1>Dashboard</h1><p>Your recruitment workspace at a glance</p></div>
+        <div><h1>Command Center</h1><p>Real-time pipeline intelligence</p></div>
+        <button class="btn btn-primary" onclick="openCand()">+ Add candidate</button>
       </div>
+      <!-- KPI STRIP -->
       <div class="stats">
-        <div class="stat"><div class="label">Candidates</div><div class="val" id="stCand">0</div></div>
-        <div class="stat"><div class="label">Open Jobs</div><div class="val" id="stJobs">0</div></div>
-        <div class="stat"><div class="label">In Pipeline</div><div class="val" id="stPipe">0</div></div>
-        <div class="stat"><div class="label">Hired</div><div class="val" id="stHired">0</div></div>
+        <div class="stat"><div class="label">Total Candidates</div><div class="val" id="stCand">0</div><div id="stCandDelta" style="font-size:11px;margin-top:4px;color:rgba(255,255,255,.35)"></div></div>
+        <div class="stat"><div class="label">Open Roles</div><div class="val" id="stJobs">0</div></div>
+        <div class="stat"><div class="label">Active Pipeline</div><div class="val" id="stPipe">0</div><div id="stPipePct" style="font-size:11px;margin-top:4px;color:rgba(255,255,255,.35)"></div></div>
+        <div class="stat"><div class="label">Hired</div><div class="val" id="stHired">0</div><div id="stHireRate" style="font-size:11px;margin-top:4px;color:#10b981"></div></div>
       </div>
-      <div class="panel">
-        <h2>Recent activity</h2>
-        <div id="activityFeed" class="empty">No activity yet. Add your first candidate to get started.</div>
+      <!-- PIPELINE FUNNEL -->
+      <div class="panel" style="padding:24px">
+        <h2 style="margin-bottom:16px">Pipeline Funnel</h2>
+        <div id="dashFunnel" style="display:flex;gap:4px;align-items:flex-end;height:140px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <!-- TOP CANDIDATES -->
+        <div class="panel" style="padding:24px">
+          <h2 style="margin-bottom:16px">Top Candidates</h2>
+          <div id="dashTopCands" style="display:grid;gap:8px"></div>
+        </div>
+        <!-- RECENT ACTIVITY -->
+        <div class="panel" style="padding:24px">
+          <h2 style="margin-bottom:16px">Recent Activity</h2>
+          <div id="activityFeed" class="empty" style="font-size:13px">No activity yet. Add your first candidate to get started.</div>
+        </div>
+      </div>
+      <!-- QUICK ACTIONS -->
+      <div class="panel" style="padding:24px;margin-top:0">
+        <h2 style="margin-bottom:16px">Quick Actions</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn btn-ghost" style="width:auto;padding:10px 20px" onclick="switchView('import')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import Profile</button>
+          <button class="btn btn-ghost" style="width:auto;padding:10px 20px" onclick="switchView('ai')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>AI Personality Profile</button>
+          <button class="btn btn-ghost" style="width:auto;padding:10px 20px" onclick="switchView('discover')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Discover Jobs</button>
+          <button class="btn btn-ghost" style="width:auto;padding:10px 20px" onclick="openJob()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px;margin-right:6px"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Add Job</button>
+        </div>
       </div>
     </section>
 
@@ -160,7 +205,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     <section class="view hidden" id="view-candidates">
       <div class="page-head">
         <div><h1>Candidates</h1><p>Your talent database</p></div>
-        <button class="btn btn-primary" onclick="openCand()">+ Add candidate</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="candSearch" placeholder="Search name, role, location..." oninput="renderCandTable()" style="padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:13px;width:240px;outline:none">
+          <button class="btn btn-primary" onclick="openCand()">+ Add candidate</button>
+        </div>
       </div>
       <div class="panel">
         <table class="tbl"><thead><tr><th>Name</th><th>Role</th><th>Stage</th><th>AI Score</th><th>Added</th></tr></thead><tbody id="candList"></tbody></table>
@@ -172,7 +220,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
     <section class="view hidden" id="view-jobs">
       <div class="page-head">
         <div><h1>Jobs</h1><p>Open roles & aggregation</p></div>
-        <button class="btn btn-primary" onclick="openJob()">+ Add job</button>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input id="jobSearch" placeholder="Search title, company, location..." oninput="renderJobTable()" style="padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:13px;width:240px;outline:none">
+          <button class="btn btn-primary" onclick="openJob()">+ Add job</button>
+        </div>
       </div>
       <div class="panel">
         <table class="tbl"><thead><tr><th>Title</th><th>Company</th><th>Location</th><th>Status</th><th>Added</th></tr></thead><tbody id="jobList"></tbody></table>
@@ -288,24 +339,56 @@ Skills: Figma, Design Systems, User Research, Prototyping, Sketch..."></textarea
       </div>
     </section>
 
-    <!-- WORKFLOWS -->
+    <!-- ANALYTICS -->
     <section class="view hidden" id="view-workflows">
       <div class="page-head">
-        <div><h1>Workflows</h1><p>Autonomous agents & scheduled jobs</p></div>
+        <div><h1>Pipeline Analytics</h1><p>Conversion rates, velocity, and talent insights</p></div>
       </div>
-      <div class="panel">
-        <h2>Automation rules</h2>
-        <div id="wfRules" style="display:grid;gap:12px;margin-top:8px"></div>
+      <!-- CONVERSION METRICS -->
+      <div class="stats" id="analyticsKpis">
+        <div class="stat"><div class="label">Screening Rate</div><div class="val" id="anScreenRate">—</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:4px">New → Screening</div></div>
+        <div class="stat"><div class="label">Interview Rate</div><div class="val" id="anIntRate">—</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:4px">Screening → Interview</div></div>
+        <div class="stat"><div class="label">Offer Rate</div><div class="val" id="anOfferRate">—</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:4px">Interview → Offer</div></div>
+        <div class="stat"><div class="label">Close Rate</div><div class="val" id="anCloseRate">—</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:4px">Offer → Hired</div></div>
       </div>
-      <div class="panel">
-        <h2>AI Agents (deployed)</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
-          <div class="stat"><div class="label">ai-score-resume</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:6px">Claude Haiku · scores a resume vs JD with strengths/gaps</div></div>
-          <div class="stat"><div class="label">ai-parse-profile</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:6px">Claude Haiku · structured extraction from raw text</div></div>
-          <div class="stat"><div class="label">ai-gen-outreach</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:6px">Claude Sonnet · personalised cold outreach</div></div>
-          <div class="stat"><div class="label">ai-match-candidates</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:6px">Claude Haiku · top-N matches for a job</div></div>
-          <div class="stat"><div class="label">ai-personality-profile</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:6px">Claude Sonnet · Big5 + DISC + interview Qs</div></div>
-          <div class="stat"><div class="label">sync-jobs-daily</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:6px">Cron 09:00 UTC · Remotive feed ingest</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <!-- STAGE DISTRIBUTION -->
+        <div class="panel" style="padding:24px">
+          <h2 style="margin-bottom:16px">Stage Distribution</h2>
+          <div id="anStageDist" style="display:grid;gap:10px"></div>
+        </div>
+        <!-- SCORE DISTRIBUTION -->
+        <div class="panel" style="padding:24px">
+          <h2 style="margin-bottom:16px">AI Score Distribution</h2>
+          <div id="anScoreDist" style="display:grid;gap:10px"></div>
+        </div>
+      </div>
+      <!-- SOURCE & TALENT INSIGHTS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="panel" style="padding:24px">
+          <h2 style="margin-bottom:16px">Top Skills in Pipeline</h2>
+          <div id="anTopSkills" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        </div>
+        <div class="panel" style="padding:24px">
+          <h2 style="margin-bottom:16px">Location Breakdown</h2>
+          <div id="anLocations" style="display:grid;gap:8px"></div>
+        </div>
+      </div>
+      <!-- AUTOMATION RULES -->
+      <div class="panel" style="padding:24px">
+        <h2 style="margin-bottom:16px">Automation Rules</h2>
+        <div id="wfRules" style="display:grid;gap:12px"></div>
+      </div>
+      <!-- AI ENGINE STATUS -->
+      <div class="panel" style="padding:24px">
+        <h2 style="margin-bottom:16px">AI Engine Status</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Resume Scorer</div><div style="font-size:11px;color:rgba(255,255,255,.4)">Claude Haiku</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Profile Parser</div><div style="font-size:11px;color:rgba(255,255,255,.4)">Claude Haiku</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Outreach Generator</div><div style="font-size:11px;color:rgba(255,255,255,.4)">Claude Sonnet</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Candidate Matcher</div><div style="font-size:11px;color:rgba(255,255,255,.4)">Claude Haiku</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Personality Profiler</div><div style="font-size:11px;color:rgba(255,255,255,.4)">Claude Sonnet</div></div></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Job Feed Sync</div><div style="font-size:11px;color:rgba(255,255,255,.4)">Cron · 09:00 UTC</div></div></div>
         </div>
       </div>
     </section>
@@ -355,6 +438,33 @@ const DEMO_USER_ID='00000000-0000-0000-0000-000000000001';
 let user={id:DEMO_USER_ID,email:'demo@recruitdna.local'},candidates=[],jobs=[];
 const STAGES=['new','screening','interview','offer','hired','rejected'];
 const $=id=>document.getElementById(id);
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+
+/* ── Custom modal / toast helpers (replaces native prompt/alert) ── */
+function rdnaModal({title,subtitle,type,value,options,placeholder}){
+  return new Promise(resolve=>{
+    const ov=document.createElement('div');ov.className='rdna-overlay';
+    let input='';
+    if(type==='select'&&options){input=`<select id="_rdnaInput">${options.map(o=>`<option value="${o}"${o===value?' selected':''}>${o}</option>`).join('')}</select>`}
+    else{input=`<input id="_rdnaInput" value="${(value||'').replace(/"/g,'&quot;')}" placeholder="${placeholder||''}" autocomplete="off">`}
+    ov.innerHTML=`<div class="rdna-modal"><h3>${title||''}</h3>${subtitle?'<p>'+subtitle+'</p>':'<div style="margin-bottom:14px"></div>'}${input}<div class="rdna-btns"><button class="rdna-btn-cancel" id="_rdnaCancel">Cancel</button><button class="rdna-btn-ok" id="_rdnaOk">OK</button></div></div>`;
+    document.body.appendChild(ov);
+    requestAnimationFrame(()=>ov.classList.add('show'));
+    const inp=ov.querySelector('#_rdnaInput');inp.focus();if(inp.select)inp.select();
+    const close=(val)=>{ov.classList.remove('show');setTimeout(()=>ov.remove(),200);resolve(val)};
+    ov.querySelector('#_rdnaCancel').onclick=()=>close(null);
+    ov.querySelector('#_rdnaOk').onclick=()=>close(inp.value);
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')close(inp.value);if(e.key==='Escape')close(null)});
+    ov.addEventListener('click',e=>{if(e.target===ov)close(null)});
+  });
+}
+function rdnaToast(msg,type){
+  let t=document.querySelector('.rdna-toast');
+  if(t)t.remove();
+  t=document.createElement('div');t.className='rdna-toast'+(type?' '+type:'');t.textContent=msg;
+  document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},2800);
+}
 
 // Boot directly — no auth gate
 (async()=>{
@@ -399,13 +509,114 @@ async function loadData(){
   jobs=j.data||[];
 }
 
-function renderAll(){renderStats();renderPipeline();renderCandTable();renderJobTable();}
+function renderAll(){renderStats();renderPipeline();renderCandTable();renderJobTable();renderDashFunnel();renderDashTopCands();renderAnalytics();}
+
+function switchView(name){
+  document.querySelectorAll('.nav-item').forEach(n=>{n.classList.toggle('active',n.dataset.view===name)});
+  document.querySelectorAll('.view').forEach(v=>{v.classList.toggle('hidden',v.id!=='view-'+name)});
+}
 
 function renderStats(){
-  $('stCand').textContent=candidates.length;
-  $('stJobs').textContent=jobs.filter(j=>j.status==='open'||!j.status).length;
-  $('stPipe').textContent=candidates.filter(c=>c.stage&&!['hired','rejected'].includes(c.stage)).length;
-  $('stHired').textContent=candidates.filter(c=>c.stage==='hired').length;
+  const total=candidates.length;
+  const openJobs=jobs.filter(j=>j.status==='open'||!j.status).length;
+  const active=candidates.filter(c=>c.stage&&!['hired','rejected'].includes(c.stage)).length;
+  const hired=candidates.filter(c=>c.stage==='hired').length;
+  $('stCand').textContent=total;
+  $('stJobs').textContent=openJobs;
+  $('stPipe').textContent=active;
+  $('stHired').textContent=hired;
+  // Contextual sub-stats
+  const dp=$('stPipePct');if(dp)dp.textContent=total?Math.round(active/total*100)+'% active':'';
+  const hr=$('stHireRate');if(hr)hr.textContent=total?Math.round(hired/total*100)+'% hire rate':'';
+}
+
+function renderDashFunnel(){
+  const el=$('dashFunnel');if(!el)return;
+  const stageColors={new:'#6366f1',screening:'#f59e0b',interview:'#10b981',offer:'#06b6d4',hired:'#22c55e',rejected:'#ef4444'};
+  const counts=STAGES.map(s=>({name:s,count:candidates.filter(c=>(c.stage||'new')===s).length}));
+  const max=Math.max(1,...counts.map(c=>c.count));
+  el.innerHTML=counts.map(s=>{
+    const pct=Math.max(8,s.count/max*100);
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div style="font-size:18px;font-weight:800;color:#fff">${s.count}</div>
+      <div style="width:100%;border-radius:6px 6px 0 0;background:${stageColors[s.name]||'#ef4444'};height:${pct}%;min-height:8px;transition:height .4s ease"></div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:capitalize;writing-mode:horizontal-tb">${s.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDashTopCands(){
+  const el=$('dashTopCands');if(!el)return;
+  const sorted=[...candidates].filter(c=>c.ai_score).sort((a,b)=>(b.ai_score||0)-(a.ai_score||0)).slice(0,5);
+  if(!sorted.length){el.innerHTML='<div style="color:rgba(255,255,255,.4);font-size:13px">No scored candidates yet. Score resumes against jobs to populate this.</div>';return}
+  el.innerHTML=sorted.map((c,i)=>{
+    const scoreColor=c.ai_score>=80?'#22c55e':c.ai_score>=60?'#f59e0b':'#ef4444';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px">
+      <div style="width:28px;height:28px;border-radius:50%;background:${scoreColor}22;color:${scoreColor};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">${c.ai_score}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.full_name||c.name||'—')}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4)">${esc(c.current_title||'No title')}</div>
+      </div>
+      <span class="tag tag-open" style="font-size:10px">${esc(c.stage||'new')}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderAnalytics(){
+  // Conversion rates
+  const stageCount=s=>candidates.filter(c=>(c.stage||'new')===s).length;
+  const totalNonNew=candidates.filter(c=>c.stage&&c.stage!=='new').length;
+  const total=candidates.length||1;
+  const sc=stageCount('screening'),iv=stageCount('interview'),of=stageCount('offer'),hi=stageCount('hired');
+  const pastScreening=sc+iv+of+hi+stageCount('rejected');
+  const sR=$('anScreenRate');if(sR)sR.textContent=total?Math.round(pastScreening/total*100)+'%':'—';
+  const iR=$('anIntRate');if(iR)iR.textContent=pastScreening?Math.round((iv+of+hi)/(pastScreening||1)*100)+'%':'—';
+  const oR=$('anOfferRate');if(oR)oR.textContent=(iv+of+hi)?Math.round((of+hi)/((iv+of+hi)||1)*100)+'%':'—';
+  const cR=$('anCloseRate');if(cR)cR.textContent=(of+hi)?Math.round(hi/((of+hi)||1)*100)+'%':'—';
+
+  // Stage distribution bars
+  const sd=$('anStageDist');if(sd){
+    const stageColors={new:'#6366f1',screening:'#f59e0b',interview:'#10b981',offer:'#06b6d4',hired:'#22c55e',rejected:'#ef4444'};
+    sd.innerHTML=STAGES.map(s=>{
+      const cnt=stageCount(s);const pct=Math.round(cnt/total*100);
+      return `<div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:rgba(255,255,255,.7);text-transform:capitalize">${s}</span><span style="font-size:12px;font-weight:700;color:${stageColors[s]}">${cnt} (${pct}%)</span></div><div style="height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${stageColors[s]};border-radius:3px"></div></div></div>`;
+    }).join('');
+  }
+
+  // Score distribution
+  const scoreDist=$('anScoreDist');if(scoreDist){
+    const buckets=[{label:'90-100',min:90,max:100,color:'#22c55e'},{label:'70-89',min:70,max:89,color:'#10b981'},{label:'50-69',min:50,max:69,color:'#f59e0b'},{label:'< 50',min:0,max:49,color:'#ef4444'},{label:'Unscored',min:-1,max:-1,color:'rgba(255,255,255,.2)'}];
+    const scored=candidates.filter(c=>c.ai_score);
+    const unscored=candidates.length-scored.length;
+    scoreDist.innerHTML=buckets.map(b=>{
+      const cnt=b.min===-1?unscored:scored.filter(c=>c.ai_score>=b.min&&c.ai_score<=b.max).length;
+      const pct=Math.round(cnt/total*100);
+      return `<div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:rgba(255,255,255,.7)">${b.label}</span><span style="font-size:12px;font-weight:700;color:${b.color}">${cnt}</span></div><div style="height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${b.color};border-radius:3px"></div></div></div>`;
+    }).join('');
+  }
+
+  // Top skills
+  const skillEl=$('anTopSkills');if(skillEl){
+    const skillMap={};
+    candidates.forEach(c=>{(c.skills||[]).forEach(s=>{skillMap[s]=(skillMap[s]||0)+1})});
+    const top=Object.entries(skillMap).sort((a,b)=>b[1]-a[1]).slice(0,15);
+    if(top.length){
+      skillEl.innerHTML=top.map(([s,n])=>`<span style="padding:6px 14px;border-radius:16px;font-size:12px;font-weight:600;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:rgba(255,255,255,.8)">${esc(s)} <span style="color:rgba(255,255,255,.4)">${n}</span></span>`).join('');
+    }else{skillEl.innerHTML='<div style="color:rgba(255,255,255,.4);font-size:13px">No skill data yet. Import profiles with skills to see trends.</div>'}
+  }
+
+  // Location breakdown
+  const locEl=$('anLocations');if(locEl){
+    const locMap={};
+    candidates.forEach(c=>{const l=c.location||'Unknown';locMap[l]=(locMap[l]||0)+1});
+    const topLocs=Object.entries(locMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    if(topLocs.length){
+      locEl.innerHTML=topLocs.map(([l,n])=>{
+        const pct=Math.round(n/total*100);
+        return `<div style="display:flex;align-items:center;gap:10px"><div style="flex:1;min-width:0;font-size:12px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(l)}</div><div style="width:100px;height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:#10b981;border-radius:3px"></div></div><span style="font-size:12px;font-weight:700;color:rgba(255,255,255,.5);min-width:24px;text-align:right">${n}</span></div>`;
+      }).join('');
+    }else{locEl.innerHTML='<div style="color:rgba(255,255,255,.4);font-size:13px">No location data yet.</div>'}
+  }
 }
 
 function renderPipeline(){
@@ -425,26 +636,40 @@ function renderPipeline(){
 }
 
 async function moveStage(c){
-  const next=prompt('Move to stage ('+STAGES.join(', ')+'):',c.stage||'new');
+  const next=await rdnaModal({title:'Move to stage',subtitle:c.full_name||c.name||'Candidate',type:'select',options:STAGES,value:c.stage||'new'});
   if(!next||!STAGES.includes(next))return;
   await sb.from('candidates').update({stage:next}).eq('id',c.id);
   await loadData();renderAll();
+  rdnaToast('Moved to '+next,'success');
 }
 
 function renderCandTable(){
   const tb=$('candList');tb.innerHTML='';
-  $('candEmpty').style.display=candidates.length?'none':'block';
-  candidates.forEach(c=>{
+  const q=($('candSearch')?.value||'').toLowerCase();
+  const filtered=q?candidates.filter(c=>{
+    const str=((c.full_name||'')+(c.name||'')+(c.current_title||'')+(c.location||'')+(c.email||'')).toLowerCase();
+    return str.includes(q);
+  }):candidates;
+  $('candEmpty').style.display=filtered.length?'none':'block';
+  filtered.forEach(c=>{
+    const scoreColor=c.ai_score?(c.ai_score>=80?'#22c55e':c.ai_score>=60?'#f59e0b':'#ef4444'):'rgba(255,255,255,.3)';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><b>${esc(c.full_name||c.name||'—')}</b><br><span style="color:rgba(255,255,255,.5);font-size:12px">${esc(c.email||'')}</span></td><td>${esc(c.current_title||'')}</td><td><span class="tag tag-open">${esc(c.stage||'new')}</span></td><td>${c.ai_score||'—'}</td><td style="color:rgba(255,255,255,.5);font-size:12px">${fmtDate(c.created_at)}</td>`;
+    tr.innerHTML=`<td><b>${esc(c.full_name||c.name||'—')}</b><br><span style="color:rgba(255,255,255,.5);font-size:12px">${esc(c.email||'')}</span></td><td>${esc(c.current_title||'')}</td><td><span class="tag tag-open">${esc(c.stage||'new')}</span></td><td><span style="color:${scoreColor};font-weight:700">${c.ai_score||'—'}</span></td><td style="color:rgba(255,255,255,.5);font-size:12px">${fmtDate(c.created_at)}</td>`;
+    tr.style.cursor='pointer';
+    tr.onclick=()=>moveStage(c);
     tb.appendChild(tr);
   });
 }
 
 function renderJobTable(){
   const tb=$('jobList');tb.innerHTML='';
-  $('jobEmpty').style.display=jobs.length?'none':'block';
-  jobs.forEach(j=>{
+  const q=($('jobSearch')?.value||'').toLowerCase();
+  const filtered=q?jobs.filter(j=>{
+    const str=((j.title||'')+(j.company||'')+(j.location||'')).toLowerCase();
+    return str.includes(q);
+  }):jobs;
+  $('jobEmpty').style.display=filtered.length?'none':'block';
+  filtered.forEach(j=>{
     const st=j.status||'open';
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><b>${esc(j.title)}</b></td><td>${esc(j.company||'')}</td><td>${esc(j.location||'')}</td><td><span class="tag tag-${st}">${st}</span></td><td style="color:rgba(255,255,255,.5);font-size:12px">${fmtDate(j.created_at)}</td>`;
@@ -456,10 +681,10 @@ function renderJobTable(){
 function openCand(){$('candModal').classList.add('active')}
 function closeCand(){$('candModal').classList.remove('active');['cName','cEmail','cTitle','cLoc','cNotes'].forEach(i=>$(i).value='')}
 async function saveCand(){
-  const name=$('cName').value.trim();if(!name)return alert('Name required');
+  const name=$('cName').value.trim();if(!name)return rdnaToast('Name required','error');
   const payload={user_id:user.id,full_name:name,email:$('cEmail').value.trim()||null,current_title:$('cTitle').value.trim()||null,location:$('cLoc').value.trim()||null,stage:$('cStage').value,notes:$('cNotes').value.trim()||null};
   const{data:ins,error}=await sb.from('candidates').insert(payload).select().single();
-  if(error)return alert(error.message);
+  if(error)return rdnaToast(error.message,'error');
   await sb.from('activity_log').insert({user_id:user.id,action:'candidate_added',details:{name}});
   closeCand();await loadData();renderAll();
   // Auto-score workflow: score new candidate against each open job
@@ -489,10 +714,10 @@ async function autoScoreCandidate(cand,openJobs){
 function openJob(){$('jobModal').classList.add('active')}
 function closeJob(){$('jobModal').classList.remove('active');['jTitle','jCompany','jLoc','jDesc'].forEach(i=>$(i).value='')}
 async function saveJob(){
-  const title=$('jTitle').value.trim();if(!title)return alert('Title required');
+  const title=$('jTitle').value.trim();if(!title)return rdnaToast('Title required','error');
   const payload={user_id:user.id,title,company:$('jCompany').value.trim()||null,location:$('jLoc').value.trim()||null,description:$('jDesc').value.trim()||null,status:'open',source:'manual'};
   const{data:ins,error}=await sb.from('jobs').insert(payload).select().single();
-  if(error)return alert(error.message);
+  if(error)return rdnaToast(error.message,'error');
   closeJob();await loadData();renderAll();
   // Auto-match workflow
   if(ins&&candidates.length){
@@ -517,7 +742,7 @@ async function callAgent(name,body){
 // AI Resume Scorer (real Claude)
 async function scoreResume(){
   const job=$('aiJob').value.trim(),res=$('aiRes').value.trim();
-  if(!job||!res)return alert('Fill both fields');
+  if(!job||!res)return rdnaToast('Fill both fields','error');
   const el=$('aiResult');el.classList.remove('hidden');el.innerHTML='<div style="color:rgba(255,255,255,.7)">Calling Claude...</div>';
   try{
     const d=await callAgent('ai-score-resume',{job,resume:res});
@@ -528,7 +753,7 @@ async function scoreResume(){
 // AI Outreach (real Claude)
 async function genOutreach(){
   const n=$('outName').value.trim(),r=$('outRole').value.trim();
-  if(!n||!r)return alert('Fill both fields');
+  if(!n||!r)return rdnaToast('Fill both fields','error');
   const el=$('outResult');el.classList.remove('hidden');el.textContent='Calling Claude...';
   try{
     const d=await callAgent('ai-gen-outreach',{candidate:{name:n},role:r,tone:'warm-professional'});
@@ -549,16 +774,16 @@ async function runPersonality(){
     const c=candidates.find(x=>x.id===id);
     if(c)text=`${c.full_name}\nTitle: ${c.current_title||''}\nCompany: ${c.current_company||''}\nLocation: ${c.location||''}\nSkills: ${(c.skills||[]).join(', ')}\nYears: ${c.experience_years||''}\nSummary: ${c.summary||''}\nNotes: ${c.notes||''}`;
   }
-  if(!text&&!url)return alert('Provide a URL, paste profile text, or pick a saved candidate');
+  if(!text&&!url)return rdnaToast('Provide a URL, paste profile text, or pick a saved candidate','error');
   const el=$('persResult');el.classList.remove('hidden');el.innerHTML=`<div class="panel" style="text-align:center;padding:48px 24px">
     <div style="display:inline-block;margin-bottom:20px">
       <svg width="48" height="48" viewBox="0 0 48 48" style="animation:rdna-spin 1.2s linear infinite"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/><circle cx="24" cy="24" r="20" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="80 45" stroke-linecap="round"/></svg>
     </div>
     <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px" id="_persPhase">Scanning profile data</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.35)">This typically takes 5–15 seconds</div>
-    <style>@keyframes rdna-spin{to{transform:rotate(360deg)}}</style>
-    <script>!function(){var ph=["Scanning profile data","Mapping personality dimensions","Evaluating communication patterns","Generating behavioral insights","Compiling assessment report"],i=0,el=document.getElementById("_persPhase");if(el){var iv=setInterval(function(){i++;if(i<ph.length&&el){el.textContent=ph[i]}else{clearInterval(iv)}},2500)}}()</script>
+    <div style="font-size:12px;color:rgba(255,255,255,.35)">This typically takes 5\u201315 seconds</div>
   </div>`;
+  if(!document.getElementById('rdna-spin-style')){const st=document.createElement('style');st.id='rdna-spin-style';st.textContent='@keyframes rdna-spin{to{transform:rotate(360deg)}}';document.head.appendChild(st)}
+  !function(){var ph=["Scanning profile data","Mapping personality dimensions","Evaluating communication patterns","Generating behavioral insights","Compiling assessment report"],i=0,pe=document.getElementById("_persPhase");if(pe){var iv=setInterval(function(){i++;if(i<ph.length&&pe){pe.textContent=ph[i]}else{clearInterval(iv)}},2500)}}();
   try{
     const body={};if(text)body.profile=text;if(url)body.url=url;
     const p=await callAgent('ai-personality-profile',body);
@@ -570,11 +795,11 @@ async function runPersonality(){
     el.innerHTML=renderPersonaReport(p.markdown||'',candName||'Candidate');
   }catch(e){el.innerHTML=`<div class="panel"><div style="color:#fca5a5">${esc(e.message)}</div></div>`}
 }
-function copyPersona(){if(window._lastPersonaMd){navigator.clipboard.writeText(window._lastPersonaMd);alert('Report copied to clipboard')}}
+function copyPersona(){if(window._lastPersonaMd){navigator.clipboard.writeText(window._lastPersonaMd);rdnaToast('Report copied to clipboard','success')}}
 
 /* ---------- PDF Export (Full Personality Report — Print-Ready White) ---------- */
 function downloadPersonaPdf(name){
-  const md=window._lastPersonaMd;if(!md)return alert('No report to export');
+  const md=window._lastPersonaMd;if(!md)return rdnaToast('No report to export','error');
   const parsed=parsePersonaMd(md);
   const discColors={D:'#dc2626',I:'#ca8a04',S:'#16a34a',C:'#2563eb'};
   const discLabels={D:'Dominance',I:'Influence',S:'Steadiness',C:'Conscientiousness'};
@@ -582,61 +807,78 @@ function downloadPersonaPdf(name){
   const primaryDisc=discType.charAt(0).toUpperCase();
   const hc=discColors[primaryDisc]||'#dc2626';
   const F='font-family:Helvetica,Arial,sans-serif;';
+  const bodyS=F+'font-size:10px;color:#374151;line-height:1.7;';
 
   function sec(title,color,items){
     if(!items||!items.length)return '';
-    return `<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
-      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${color};color:#fff">${esc(title)}</div>
-      ${items.map(x=>`<div style="${F}padding:9px 14px;border-top:1px solid #f3f4f6;font-size:10px;color:#374151;line-height:1.6">${esc(x)}</div>`).join('')}
+    return `<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px">
+      <div style="${F}padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${color};color:#fff">${esc(title)}</div>
+      ${items.map(x=>`<div style="${bodyS}padding:10px 16px;border-top:1px solid #f3f4f6">${esc(x)}</div>`).join('')}
+    </div>`;
+  }
+
+  function prose(title,color,text){
+    if(!text)return '';
+    return `<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px">
+      <div style="${F}padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${color};color:#fff">${esc(title)}</div>
+      <div style="${bodyS}padding:12px 16px">${esc(text)}</div>
     </div>`;
   }
 
   let h=`<div style="${F}background:#fff;color:#111;padding:0;width:720px">`;
 
-  // ── HEADER ──
-  h+=`<div style="background:${hc};padding:28px 32px;color:#fff">
-    <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;opacity:.8;margin-bottom:4px">RecruitDNA Personality Assessment</div>
-    <div style="${F}font-size:26px;font-weight:800;margin-bottom:6px">${esc(name||'Profile')}</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      ${discType?`<span style="background:rgba(0,0,0,.25);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700">${esc(discType)}</span>`:''}
-      ${parsed.mbti?`<span style="background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:600">${esc(parsed.mbti)}</span>`:''}
-      ${parsed.enneagram?`<span style="background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:600">${esc(parsed.enneagram)}</span>`:''}
+  // ── PAGE 1: HEADER ──
+  h+=`<div style="background:${hc};padding:32px 36px;color:#fff">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:2.5px;opacity:.7;margin-bottom:6px">RecruitDNA</div>
+        <div style="${F}font-size:28px;font-weight:800;margin-bottom:4px">Personality Assessment</div>
+        <div style="${F}font-size:18px;font-weight:400;opacity:.9">${esc(name||'Profile')}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="${F}font-size:9px;opacity:.6;margin-bottom:4px">${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px">
+          ${discType?`<span style="background:rgba(0,0,0,.25);padding:4px 14px;border-radius:14px;font-size:11px;font-weight:700">${esc(discType)}</span>`:''}
+          ${parsed.mbti?`<span style="background:rgba(255,255,255,.18);padding:4px 14px;border-radius:14px;font-size:11px;font-weight:600">${esc(parsed.mbti)}</span>`:''}
+          ${parsed.enneagram?`<span style="background:rgba(255,255,255,.18);padding:4px 14px;border-radius:14px;font-size:11px;font-weight:600">${esc(parsed.enneagram)}</span>`:''}
+        </div>
+      </div>
     </div>
   </div>`;
 
-  h+=`<div style="padding:24px 32px">`;
+  h+=`<div style="padding:28px 36px">`;
 
   // ── DISC ──
   if(parsed.disc){
-    h+=`<div style="margin-bottom:18px">
-      <div style="${F}font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px">DISC Profile</div>
-      ${parsed.discTypeName?`<div style="${F}font-size:18px;font-weight:800;color:${hc};margin-bottom:10px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:13px;color:#9ca3af">(${esc(discType)})</span></div>`:''}
-      <div style="display:flex;gap:8px;margin-bottom:10px">
+    h+=`<div style="margin-bottom:20px">
+      <div style="${F}font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#9ca3af;margin-bottom:8px">DISC Profile</div>
+      ${parsed.discTypeName?`<div style="${F}font-size:20px;font-weight:800;color:${hc};margin-bottom:12px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:14px;color:#9ca3af">(${esc(discType)})</span></div>`:''}
+      <div style="display:flex;gap:8px;margin-bottom:12px">
         ${['D','I','S','C'].map(l=>{
           const active=discType.toUpperCase().includes(l);
-          return `<div style="flex:1;text-align:center;padding:10px 6px;border-radius:8px;border:2px solid ${active?discColors[l]:'#e5e7eb'};background:${active?discColors[l]+'12':'#fafafa'}">
-            <div style="${F}font-size:20px;font-weight:800;color:${active?discColors[l]:'#d1d5db'}">${active?l:'—'}</div>
+          return `<div style="flex:1;text-align:center;padding:12px 6px;border-radius:8px;border:2px solid ${active?discColors[l]:'#e5e7eb'};background:${active?discColors[l]+'12':'#fafafa'}">
+            <div style="${F}font-size:22px;font-weight:800;color:${active?discColors[l]:'#d1d5db'}">${active?l:'\u2014'}</div>
             <div style="${F}font-size:9px;color:${active?'#6b7280':'#d1d5db'};margin-top:2px">${discLabels[l]}</div>
           </div>`;
         }).join('')}
       </div>
-      ${parsed.discDesc?`<div style="${F}color:#6b7280;font-size:10px;line-height:1.6">${esc(parsed.discDesc)}</div>`:''}
-      ${parsed.traitBadges.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${parsed.traitBadges.map(b=>`<span style="${F}padding:3px 10px;border-radius:12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${hc};border:1.5px solid ${hc}">${esc(b)}</span>`).join('')}</div>`:''}
+      ${parsed.discDesc?`<div style="${bodyS}">${esc(parsed.discDesc)}</div>`:''}
+      ${parsed.traitBadges.length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${parsed.traitBadges.map(b=>`<span style="${F}padding:4px 12px;border-radius:14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${hc};border:1.5px solid ${hc}">${esc(b)}</span>`).join('')}</div>`:''}
     </div>`;
   }
 
-  // ── PERSONALITY TRAITS (Spectrums) ──
+  // ── PERSONALITY TRAITS ──
   if(parsed.personalityTraits.length){
-    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
-      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${hc};color:#fff">Personality Traits</div>
+    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px">
+      <div style="${F}padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${hc};color:#fff">Personality Traits</div>
       ${parsed.personalityTraits.map(t=>{
         const pct=t.value<=10?t.value*10:Math.min(100,t.value);
-        return `<div style="padding:8px 14px;border-top:1px solid #f3f4f6;display:flex;align-items:center;gap:8px">
-          <span style="${F}font-size:9px;color:#6b7280;width:75px;text-align:right;flex-shrink:0">${esc(t.left)}</span>
+        return `<div style="padding:9px 16px;border-top:1px solid #f3f4f6;display:flex;align-items:center;gap:10px">
+          <span style="${F}font-size:9px;color:#6b7280;width:80px;text-align:right;flex-shrink:0">${esc(t.left)}</span>
           <div style="flex:1;height:5px;background:#e5e7eb;border-radius:3px;position:relative">
             <div style="position:absolute;top:50%;left:${pct}%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:${hc}"></div>
           </div>
-          <span style="${F}font-size:9px;color:#6b7280;width:75px;flex-shrink:0">${esc(t.right)}</span>
+          <span style="${F}font-size:9px;color:#6b7280;width:80px;flex-shrink:0">${esc(t.right)}</span>
         </div>`;
       }).join('')}
     </div>`;
@@ -645,12 +887,12 @@ function downloadPersonaPdf(name){
   // ── BIG FIVE ──
   if(parsed.bigFive.length){
     const b5c=['#dc2626','#059669','#d97706','#0891b2','#e11d48'];
-    h+=`<div style="break-inside:avoid;margin-bottom:14px">
-      <div style="${F}font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:8px">Big Five (OCEAN)</div>
+    h+=`<div style="break-inside:avoid;margin-bottom:16px">
+      <div style="${F}font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#9ca3af;margin-bottom:10px">Big Five (OCEAN)</div>
       ${parsed.bigFive.map((t,i)=>{
         const pct=Math.max(0,Math.min(100,parseInt(t.score)||50));
         const c=b5c[i%5];
-        return `<div style="margin-bottom:8px">
+        return `<div style="margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px">
             <span style="${F}font-size:10px;font-weight:600;color:#374151">${esc(t.name)}</span>
             <span style="${F}font-size:10px;font-weight:700;color:${c}">${pct}/100</span>
@@ -658,7 +900,7 @@ function downloadPersonaPdf(name){
           <div style="height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
             <div style="height:100%;width:${pct}%;background:${c};border-radius:3px"></div>
           </div>
-          ${t.desc?`<div style="${F}font-size:9px;color:#9ca3af;margin-top:2px">${esc(t.desc)}</div>`:''}
+          ${t.desc?`<div style="${F}font-size:9px;color:#6b7280;margin-top:3px;line-height:1.5">${esc(t.desc)}</div>`:''}
         </div>`;
       }).join('')}
     </div>`;
@@ -666,88 +908,100 @@ function downloadPersonaPdf(name){
 
   // ── MBTI + ENNEAGRAM ──
   if(parsed.mbti||parsed.enneagram){
-    h+=`<div style="display:flex;gap:10px;margin-bottom:14px">`;
+    h+=`<div style="display:flex;gap:12px;margin-bottom:16px">`;
     if(parsed.mbti){
-      h+=`<div style="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:14px;text-align:center">
+      h+=`<div style="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:16px;text-align:center">
         <div style="${F}font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px">MBTI</div>
-        <div style="${F}font-size:26px;font-weight:800;color:${hc}">${esc(parsed.mbti)}</div>
-        ${parsed.mbtiDesc?`<div style="${F}font-size:9px;color:#9ca3af;margin-top:4px">${esc(parsed.mbtiDesc)}</div>`:''}
+        <div style="${F}font-size:28px;font-weight:800;color:${hc}">${esc(parsed.mbti)}</div>
+        ${parsed.mbtiDesc?`<div style="${F}font-size:9px;color:#6b7280;margin-top:6px;line-height:1.5">${esc(parsed.mbtiDesc)}</div>`:''}
       </div>`;
     }
     if(parsed.enneagram){
-      h+=`<div style="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:14px;text-align:center">
+      h+=`<div style="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:16px;text-align:center">
         <div style="${F}font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;margin-bottom:6px">Enneagram</div>
-        <div style="${F}font-size:26px;font-weight:800;color:#d97706">${esc(parsed.enneagram)}</div>
-        ${parsed.enneagramDesc?`<div style="${F}font-size:9px;color:#9ca3af;margin-top:4px">${esc(parsed.enneagramDesc)}</div>`:''}
+        <div style="${F}font-size:28px;font-weight:800;color:#d97706">${esc(parsed.enneagram)}</div>
+        ${parsed.enneagramDesc?`<div style="${F}font-size:9px;color:#6b7280;margin-top:6px;line-height:1.5">${esc(parsed.enneagramDesc)}</div>`:''}
       </div>`;
     }
     h+=`</div>`;
   }
 
-  // ── SECTION PAIRS ──
-  const pairs=[
-    [['Behavior','#2563eb',parsed.behavior],['Energizers','#d97706',parsed.energizers]],
-    [['Drainers','#dc2626',parsed.drainers],['Strengths','#059669',parsed.strengthsList]],
-    [['Blind Spots','#d97706',parsed.blindSpotsList],['First Impression','#7c3aed',parsed.firstImpression]],
-    [['Building Trust','#ea580c',parsed.buildingTrust],['Product Demo','#0891b2',parsed.productDemo]],
-    [['Negotiating','#be185d',parsed.negotiating],['Pricing','#dc2626',parsed.pricing]],
-    [['Drive to Action','#0d9488',parsed.driveToAction],['Following Up','#d97706',parsed.followingUp]],
+  // ── DETAILED SECTIONS (full width for dense content) ──
+  const fullSections=[
+    ['Behavioral Patterns','#2563eb',parsed.behavior],
+    ['What Energizes Them','#d97706',parsed.energizers],
+    ['What Drains Them','#dc2626',parsed.drainers],
+    ['Strengths \u2014 What They Bring to a Team','#059669',parsed.strengthsList],
+    ['Blind Spots \u2014 What to Watch For','#d97706',parsed.blindSpotsList],
+    ['How to Make a Great First Impression','#7c3aed',parsed.firstImpression],
+    ['Building Trust Over Time','#ea580c',parsed.buildingTrust],
+    ['Selling to This Person','#0891b2',parsed.productDemo],
+    ['Negotiation Style','#be185d',parsed.negotiating],
+    ['Discussing Pricing & Budget','#dc2626',parsed.pricing],
+    ['How to Drive Them to Action','#0d9488',parsed.driveToAction],
+    ['Following Up Effectively','#d97706',parsed.followingUp],
+    ['How to Email Them','#dc2626',parsed.writingStyle],
   ];
-  pairs.forEach(([a,b])=>{
-    const sa=sec(a[0],a[1],a[2]),sb2=sec(b[0],b[1],b[2]);
-    if(sa||sb2)h+=`<div style="display:flex;gap:10px">${sa?`<div style="flex:1">${sa}</div>`:'<div style="flex:1"></div>'}${sb2?`<div style="flex:1">${sb2}</div>`:'<div style="flex:1"></div>'}</div>`;
-  });
+  fullSections.forEach(([t,c,items])=>{ h+=sec(t,c,items); });
 
-  if(parsed.writingStyle.length)h+=sec('Writing Style','#dc2626',parsed.writingStyle);
+  // ── PROSE SECTIONS ──
+  h+=prose('Communication Style','#475569',parsed.commStyle);
+  h+=prose('Ideal Work Environment','#059669',parsed.idealEnv);
+  h+=prose('Career Trajectory & Fit','#2563eb',parsed.careerFit);
 
-  // ── TEXT SECTIONS ──
-  ['commStyle','idealEnv','careerFit'].forEach(k=>{
-    if(!parsed[k])return;
-    const cfg={commStyle:['Communication Style','#dc2626'],idealEnv:['Ideal Environment','#059669'],careerFit:['Career Fit','#2563eb']};
-    const[t,cl]=cfg[k];
-    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
-      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${cl};color:#fff">${t}</div>
-      <div style="${F}padding:12px 14px;font-size:10px;color:#374151;line-height:1.7">${esc(parsed[k])}</div>
+  // ── RECRUITER QUICK REFERENCE ──
+  if(parsed.recruiterRef){
+    h+=`<div style="break-inside:avoid;border:2px solid ${hc};border-radius:8px;overflow:hidden;margin-bottom:14px">
+      <div style="${F}padding:12px 16px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${hc};color:#fff">Recruiter Quick Reference</div>
+      <div style="${bodyS}padding:14px 16px;white-space:pre-line">${esc(parsed.recruiterRef)}</div>
     </div>`;
-  });
+  }
 
   // ── VALUES ──
   if(parsed.values.length){
     const vc=['#dc2626','#059669','#d97706','#0891b2','#e11d48','#7c3aed','#0d9488','#ea580c'];
-    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:10px">
-      <div style="${F}padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:#7c3aed;color:#fff">Core Values</div>
-      ${parsed.values.map((v,i)=>`<div style="padding:9px 14px;border-top:1px solid #f3f4f6;display:flex;gap:8px;align-items:baseline">
+    h+=`<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px">
+      <div style="${F}padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:#7c3aed;color:#fff">Core Values</div>
+      ${parsed.values.map((v,i)=>`<div style="padding:10px 16px;border-top:1px solid #f3f4f6">
         <span style="${F}font-size:10px;font-weight:700;color:${vc[i%8]}">${esc(v.name)}</span>
-        ${v.desc?`<span style="${F}font-size:9px;color:#6b7280">— ${esc(v.desc)}</span>`:''}
+        ${v.desc?`<div style="${F}font-size:10px;color:#6b7280;margin-top:3px;line-height:1.6">${esc(v.desc)}</div>`:''}
       </div>`).join('')}
     </div>`;
   }
 
   // ── BOTTOM LINE ──
   if(parsed.bottomLine){
-    h+=`<div style="break-inside:avoid;background:#fef2f2;border:2px solid ${hc};border-radius:8px;padding:16px;margin-bottom:10px">
-      <div style="${F}font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${hc};margin-bottom:6px">Bottom Line</div>
-      <div style="${F}color:#1f2937;font-size:11px;line-height:1.7;font-weight:500">${esc(parsed.bottomLine)}</div>
+    h+=`<div style="break-inside:avoid;background:#fef2f2;border:2px solid ${hc};border-radius:8px;padding:18px;margin-bottom:14px">
+      <div style="${F}font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${hc};margin-bottom:8px">Bottom Line</div>
+      <div style="${F}color:#1f2937;font-size:11px;line-height:1.8;font-weight:500">${esc(parsed.bottomLine)}</div>
     </div>`;
   }
 
+  // ── DISCLAIMER ──
+  h+=`<div style="break-inside:avoid;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin-bottom:14px">
+    <div style="${F}font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#9ca3af;margin-bottom:4px">Disclaimer</div>
+    <div style="${F}font-size:8.5px;color:#9ca3af;line-height:1.6">This personality assessment is an informed behavioral estimate generated by RecruitDNA using AI analysis of available profile signals. It is not a clinical diagnosis and should not be treated as one. Personality is fluid \u2014 individuals adapt their behaviors based on context, environment, and personal growth. Accuracy improves with richer input data. This report is intended as a professional tool to support hiring decisions and team dynamics, and should be used alongside direct interviews and other evaluation methods.</div>
+  </div>`;
+
   // ── FOOTER ──
-  h+=`<div style="text-align:center;padding:16px 0 4px;border-top:1px solid #e5e7eb;margin-top:10px">
-    <span style="${F}font-size:9px;color:#9ca3af">Generated by RecruitDNA &middot; ${new Date().toLocaleDateString()}</span>
+  h+=`<div style="text-align:center;padding:14px 0 4px;border-top:1px solid #e5e7eb;margin-top:6px">
+    <span style="${F}font-size:9px;color:#9ca3af;font-weight:600">RecruitDNA</span>
+    <span style="${F}font-size:9px;color:#d1d5db"> &middot; </span>
+    <span style="${F}font-size:9px;color:#9ca3af">${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</span>
   </div>`;
 
   h+=`</div></div>`;
 
   const wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-9999px;top:0';wrap.innerHTML=h;document.body.appendChild(wrap);
-  const opt={margin:[0.3,0.4],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#ffffff',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
+  const opt={margin:[0.35,0.45],filename:(name||'Profile').replace(/[^a-zA-Z0-9 _-]/g,'')+'-FullReport.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#ffffff',useCORS:true},jsPDF:{unit:'in',format:'letter',orientation:'portrait'}};
   html2pdf().set(opt).from(wrap.firstChild).save().then(()=>setTimeout(()=>wrap.remove(),2000));
 }
 
 /* ---------- Copy shareable link ---------- */
 function copyPersonaLink(candId){
-  if(!candId)return alert('No candidate linked — save the profile to a candidate first');
+  if(!candId)return rdnaToast('No candidate linked — save the profile to a candidate first');
   const url=window.location.origin+window.location.pathname+'#candidate='+candId;
-  navigator.clipboard.writeText(url).then(()=>alert('Link copied!')).catch(()=>{prompt('Copy this link:',url)});
+  navigator.clipboard.writeText(url).then(()=>rdnaToast('Link copied!','success')).catch(()=>{rdnaModal({title:'Copy this link',value:url})});
 }
 
 /* ---------- On-Screen Assessment Summary ---------- */
@@ -915,18 +1169,26 @@ function parsePersonaMd(md){
     const specRe2=/[-•]\s*(.+?)\s+vs\.?\s+(.+?)[:\s]+(\d+)/gi;
     while((sm=specRe2.exec(md))!==null){r.personalityTraits.push({left:sm[1].trim(),right:sm[2].trim(),value:parseInt(sm[3])})}
   }
-  // List-based section extractor
+  // List-based section extractor — handles multi-sentence bullet points
   const extractList=(patterns)=>{
     for(const p of patterns){
-      const re=new RegExp(p+'[^\\n]*\\n([\\s\\S]+?)(?=\\n##|\\n(?:🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line)|$)','i');
+      const re=new RegExp(p+'[^\\n]*\\n([\\s\\S]+?)(?=\\n##|\\n(?:🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line|Recruiter)|$)','i');
       const sm=md.match(re);
-      if(sm){return sm[1].split('\n').map(x=>x.replace(/^[-•*\d.)\s]+/,'').trim()).filter(x=>x.length>3)}
+      if(sm){
+        const raw=sm[1];const items=[];let cur='';
+        raw.split('\n').forEach(line=>{
+          if(/^[-•*]\s/.test(line)){if(cur.trim())items.push(cur.trim());cur=line.replace(/^[-•*]\s+/,'')}
+          else if(line.trim()){cur+=' '+line.trim()}
+        });
+        if(cur.trim())items.push(cur.trim());
+        return items.filter(x=>x.length>3);
+      }
     }return[];
   };
   // Sections by emoji or heading
   const extract=(patterns)=>{
     for(const p of patterns){
-      const re=new RegExp(p+'[\\s\\S]*?\\n([\\s\\S]+?)(?=\\n(?:##|🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line)|$)','i');
+      const re=new RegExp(p+'[\\s\\S]*?\\n([\\s\\S]+?)(?=\\n(?:##|🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line|Recruiter)|$)','i');
       const sm=md.match(re);if(sm)return sm[1].trim();
     }return '';
   };
@@ -956,6 +1218,8 @@ function parsePersonaMd(md){
     const valList=extractList(['##?\\s*Values','🔑[^\\n]*']);
     valList.forEach(v=>{const parts=v.split(/[:\-–—]/);r.values.push({name:(parts[0]||v).trim(),desc:(parts[1]||'').trim()})});
   }
+  // Recruiter Quick Reference
+  r.recruiterRef=extract(['##?\\s*Recruiter\\s*Quick','##?\\s*Recruiter\\s*Reference']);
   m=md.match(/(?:Bottom\s*line|🎯)[:\s]*\n?([\s\S]+?)$/i);if(m)r.bottomLine=m[1].trim();
   return r;
 }
@@ -1001,7 +1265,7 @@ async function toggleAutoSync(){
 document.querySelectorAll('.nav-item').forEach(n=>{
   n.addEventListener('click',()=>{
     if(n.dataset.view==='ai'){refreshPersSel()}
-    if(n.dataset.view==='workflows'){renderWorkflows()}
+    if(n.dataset.view==='workflows'){renderWorkflows();renderAnalytics()}
     if(n.dataset.view==='settings'){loadSettings()}
   });
 });
@@ -1037,7 +1301,7 @@ function renderSettings(){
     const disabled=!s.free&&!hasKey;
     const bg=disabled?'background:rgba(255,255,255,.03);color:rgba(255,255,255,.35);cursor:not-allowed':on?'background:linear-gradient(135deg,#34d399,#10b981);color:#022c22;cursor:pointer':'background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);cursor:pointer';
     const badge=s.free?'<span style="font-size:10px;background:rgba(34,197,94,.15);color:#6ee7b7;padding:2px 6px;border-radius:4px;margin-left:6px">FREE</span>':disabled?'<span style="font-size:10px;background:rgba(234,179,8,.15);color:#fde68a;padding:2px 6px;border-radius:4px;margin-left:6px">KEY REQUIRED</span>':'<span style="font-size:10px;background:rgba(16,185,129,.15);color:#6ee7b7;padding:2px 6px;border-radius:4px;margin-left:6px">KEY SET</span>';
-    const onClick=disabled?'alert("Add your '+s.key+' API key in the API Keys section below, then enable.")':`toggleSrc('${s.id}')`;
+    const onClick=disabled?'rdnaToast("Add your '+s.key+' API key in the API Keys section below, then enable.","error")':`toggleSrc('${s.id}')`;
     return `<span class="tag" style="padding:10px 14px;font-size:13px;text-transform:none;letter-spacing:0;${bg}" onclick="${onClick}"><b>${s.name}</b>${badge} — ${s.desc}${on?' ✓':''}</span>`;
   }).join('');
   // API key inputs
@@ -1181,17 +1445,17 @@ function renderFeed(){
 async function importJob(j){
   const payload={user_id:user.id,title:j.title,company:j.company,location:j.location||'Remote',description:j.description||'',source:j.source.toLowerCase(),source_url:j.url,external_id:j.external_id,status:'open'};
   const{error}=await sb.from('jobs').insert(payload);
-  if(error)return alert(error.message);
+  if(error)return rdnaToast(error.message,'error');
   await sb.from('activity_log').insert({user_id:user.id,action:'job_imported',details:{title:j.title,source:j.source}});
   await loadData();renderAll();
-  alert('Imported "'+j.title+'" to your Jobs.');
+  rdnaToast('Imported "'+j.title+'" to your Jobs.','success');
 }
 
 // LINKEDIN PROFILE IMPORTER (now powered by ai-parse-profile)
 let _parsed=null;
 async function parseProfile(){
   const txt=$('impText').value.trim();const url=$('impUrl').value.trim();
-  if(!txt)return alert('Paste some profile content first');
+  if(!txt)return rdnaToast('Paste some profile content first','error');
   const p=$('impPreview');p.classList.remove('hidden');p.innerHTML='<div class="panel"><div style="color:rgba(255,255,255,.7)">Extracting with Claude...</div></div>';
   try{
     const d=await callAgent('ai-parse-profile',{text:txt,url});
@@ -1254,7 +1518,7 @@ async function saveParsed(){
   const aiScore=Math.min(98,55+_parsed.skills.length*3+(_parsed.years||0));
   const payload={user_id:user.id,full_name:_parsed.name,current_title:_parsed.title||null,current_company:_parsed.company||null,location:_parsed.location||null,skills:_parsed.skills.length?_parsed.skills:null,experience_years:_parsed.years||null,linkedin_url:_parsed.linkedin_url,summary:_parsed.summary,source:'linkedin_import',stage:'new',ai_score:aiScore};
   const{data:ins,error}=await sb.from('candidates').insert(payload).select().single();
-  if(error)return alert(error.message);
+  if(error)return rdnaToast(error.message,'error');
   await sb.from('activity_log').insert({user_id:user.id,action:'candidate_imported',details:{name:_parsed.name,source:'linkedin'}});
   const importedId=ins?.id;
   const sourceText=$('impText').value;
@@ -1271,15 +1535,14 @@ async function saveParsed(){
         await sb.from('personality_profiles').upsert({candidate_id:importedId,user_id:user.id,profile:{markdown:p.markdown,generated_at:new Date().toISOString()}},{onConflict:'candidate_id'});
         await sb.from('activity_log').insert({user_id:user.id,action:'personality_generated',details:{candidate_id:importedId,auto:true}});
       }
-      alert('Candidate saved ✓  Personality profile generated ✓');
-    }catch(e){alert('Candidate saved. Personality auto-gen failed: '+e.message)}
+      rdnaToast('Candidate saved ✓  Personality profile generated ✓');
+    }catch(e){rdnaToast('Candidate saved. Personality auto-gen failed: '+e.message,'error')}
   }else{
-    alert('Candidate saved to your pipeline.');
+    rdnaToast('Candidate saved to your pipeline.','success');
   }
 }
 
-// UTIL
-function esc(s){return(s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+// UTIL (esc defined at top of script)
 function fmtDate(d){if(!d)return'';return new Date(d).toLocaleDateString()}
 </script>
 </body>
