@@ -17,13 +17,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .auth-sub{text-align:center;color:rgba(255,255,255,.6);font-size:14px;margin-bottom:32px}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:#ef4444}
-.btn{display:inline-block;padding:12px 20px;border-radius:24px;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .2s;font-family:inherit;text-decoration:none;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select,.field textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:all .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(239,68,68,.5);background:rgba(255,255,255,.04);box-shadow:0 0 0 3px rgba(239,68,68,.08)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 22px;border-radius:28px;font-weight:700;font-size:13px;cursor:pointer;border:none;transition:all .2s;font-family:inherit;text-decoration:none;color:#fff;text-transform:uppercase;letter-spacing:.8px}
 .btn-primary{background:#ef4444;width:100%}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(239,68,68,.35);background:#dc2626}
-.btn-ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12)}
-.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(239,68,68,.35);background:#dc2626}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.1)}
+.btn-ghost:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2)}
 .btn-sm{padding:8px 14px;font-size:13px}
 .switch{text-align:center;margin-top:20px;font-size:14px;color:rgba(255,255,255,.6)}
 .switch a{color:#ef4444;text-decoration:none;font-weight:600;cursor:pointer}
@@ -33,36 +33,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .app{display:none;min-height:100vh;position:relative;z-index:1}
 .app.active{display:flex}
 .sidebar{width:240px;background:#0e0e0e;border-right:1px solid rgba(255,255,255,.06);padding:24px 16px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
-.sidebar .logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding:0 12px 24px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:rgba(255,255,255,.6);cursor:pointer;font-size:14px;font-weight:500;transition:all .15s;margin-bottom:2px}
-.nav-item:hover{background:rgba(255,255,255,.04);color:#fff}
-.nav-item.active{background:rgba(239,68,68,.12);color:#fca5a5}
-.nav-item .ico{width:18px;text-align:center}
+.sidebar .logo{font-size:22px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding:4px 12px 24px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,.5);cursor:pointer;font-size:14px;font-weight:500;transition:all .15s;margin-bottom:2px;border:1px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.03);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.04)}
+.nav-item.active{background:rgba(239,68,68,.08);color:#fff;border-color:rgba(239,68,68,.15);font-weight:600}
+.nav-item .ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-item .ico svg{display:block}
 .sidebar .user{margin-top:auto;padding:16px 12px;border-top:1px solid rgba(255,255,255,.06);font-size:12px}
 .sidebar .user .email{color:rgba(255,255,255,.5);margin-bottom:8px;word-break:break-all}
 .main{flex:1;margin-left:240px;padding:32px 40px;min-width:0}
 .page-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:12px}
-.page-head h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
-.page-head p{color:rgba(255,255,255,.45);font-size:14px;margin-top:4px}
+.page-head h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.page-head p{color:rgba(255,255,255,.35);font-size:13px;margin-top:4px;letter-spacing:.2px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
-.stat{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px}
-.stat .label{font-size:12px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.stat .val{font-size:32px;font-weight:800;letter-spacing:-1px;color:#ef4444}
-.stat .sub{font-size:12px;color:#10b981;margin-top:4px}
-.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px;margin-bottom:24px}
-.panel h2{font-size:18px;font-weight:700;margin-bottom:16px;color:#fff}
+.stat{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;border-left:3px solid rgba(239,68,68,.4);transition:border-color .2s}
+.stat:hover{border-left-color:#ef4444}
+.stat .label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:8px}
+.stat .val{font-size:36px;font-weight:800;letter-spacing:-1px;color:#fff}
+.stat .sub{font-size:12px;color:#10b981;margin-top:4px;font-weight:500}
+.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:24px;margin-bottom:24px}
+.panel h2{font-size:16px;font-weight:700;margin-bottom:16px;color:#fff;text-transform:uppercase;letter-spacing:.5px;font-size:13px}
 /* PIPELINE */
 .pipeline{display:grid;grid-template-columns:repeat(6,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
 .col{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px;min-height:300px}
 .col-head{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 12px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:10px}
 .col-head .name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.6)}
 .col-head .count{font-size:11px;background:rgba(239,68,68,.12);padding:2px 8px;border-radius:10px;color:#fca5a5}
-.cand-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
-.cand-card:hover{background:rgba(255,255,255,.06);border-color:rgba(239,68,68,.3)}
-.cand-card .name{font-size:14px;font-weight:700;margin-bottom:2px}
-.cand-card .title{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:8px}
+.cand-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.cand-card:hover{background:rgba(255,255,255,.04);border-color:rgba(239,68,68,.25);transform:translateY(-1px)}
+.cand-card .name{font-size:14px;font-weight:700;margin-bottom:3px}
+.cand-card .title{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px}
 .cand-card .meta{display:flex;justify-content:space-between;align-items:center;font-size:11px}
-.cand-card .score{background:#ef4444;color:#fff;padding:2px 8px;border-radius:8px;font-weight:700}
+.cand-card .score{background:#ef4444;color:#fff;padding:3px 10px;border-radius:20px;font-weight:700;font-size:11px;letter-spacing:.3px}
 /* TABLE */
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{text-align:left;font-size:12px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px;padding:12px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -75,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 /* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .modal-bg.active{display:flex}
-.modal{background:#111111;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal{background:#111111;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,.5)}
 .modal h2{font-size:22px;font-weight:800;margin-bottom:4px}
 .modal p.sub{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:20px}
 .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
@@ -113,17 +115,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 <div id="app" class="app active">
   <aside class="sidebar">
     <div class="logo">RecruitDNA</div>
-    <div class="nav-item active" data-view="dashboard"><span class="ico">◈</span>Dashboard</div>
-    <div class="nav-item" data-view="pipeline"><span class="ico">◉</span>Pipeline</div>
-    <div class="nav-item" data-view="candidates"><span class="ico">◎</span>Candidates</div>
-    <div class="nav-item" data-view="jobs"><span class="ico">◊</span>Jobs</div>
-    <div class="nav-item" data-view="discover"><span class="ico">⚡</span>Discover Jobs</div>
-    <div class="nav-item" data-view="import"><span class="ico">⇣</span>Import Profile</div>
-    <div class="nav-item" data-view="ai"><span class="ico">✦</span>AI Tools</div>
-    <div class="nav-item" data-view="workflows"><span class="ico">⚙</span>Workflows</div>
-    <div class="nav-item" data-view="settings"><span class="ico">✎</span>Settings</div>
+    <div class="nav-item active" data-view="dashboard"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</div>
+    <div class="nav-item" data-view="pipeline"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>Pipeline</div>
+    <div class="nav-item" data-view="candidates"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Candidates</div>
+    <div class="nav-item" data-view="jobs"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>Jobs</div>
+    <div class="nav-item" data-view="discover"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>Discover Jobs</div>
+    <div class="nav-item" data-view="import"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Import Profile</div>
+    <div class="nav-item" data-view="ai"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>AI Tools</div>
+    <div class="nav-item" data-view="workflows"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>Workflows</div>
+    <div class="nav-item" data-view="settings"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Settings</div>
     <div class="user">
-      <div class="email" id="userEmail" style="color:#6ee7b7">Demo workspace</div>
+      <div class="email" id="userEmail" style="color:rgba(239,68,68,.7);font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:11px">Demo workspace</div>
     </div>
   </aside>
 
