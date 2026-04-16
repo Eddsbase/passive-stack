@@ -8,16 +8,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:#0a0a0a;color:#fff;line-height:1.5;min-height:100vh}
-.bg-glow{position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(239,68,68,.12) 0%,transparent 60%);z-index:0;pointer-events:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:#111;color:#f0f0f0;line-height:1.5;min-height:100vh}
+.bg-glow{position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(239,68,68,.08) 0%,rgba(16,185,129,.03) 40%,transparent 65%);z-index:0;pointer-events:none}
 /* AUTH */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1}
 .auth-card{width:100%;max-width:420px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:40px;backdrop-filter:blur(20px)}
-.auth-logo{font-size:28px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px}
+.auth-logo{font-size:28px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#fff,#e2e8f0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px;text-shadow:0 0 40px rgba(239,68,68,.3)}
 .auth-sub{text-align:center;color:rgba(255,255,255,.6);font-size:14px;margin-bottom:32px}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:all .2s}
+.field input,.field select,.field textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:all .2s}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(239,68,68,.5);background:rgba(255,255,255,.04);box-shadow:0 0 0 3px rgba(239,68,68,.08)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 22px;border-radius:28px;font-weight:700;font-size:13px;cursor:pointer;border:none;transition:all .2s;font-family:inherit;text-decoration:none;color:#fff;text-transform:uppercase;letter-spacing:.8px}
 .btn-primary{background:#ef4444;width:100%}
@@ -32,9 +32,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 /* APP */
 .app{display:none;min-height:100vh;position:relative;z-index:1}
 .app.active{display:flex}
-.sidebar{width:240px;background:#0e0e0e;border-right:1px solid rgba(255,255,255,.06);padding:24px 16px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
-.sidebar .logo{font-size:22px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#ef4444,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;padding:4px 12px 24px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:16px}
-.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,.5);cursor:pointer;font-size:14px;font-weight:500;transition:all .15s;margin-bottom:2px;border:1px solid transparent}
+.sidebar{width:240px;background:#151515;border-right:1px solid rgba(255,255,255,.08);padding:24px 16px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
+.sidebar .logo{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#fff;padding:4px 12px 24px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:16px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,.6);cursor:pointer;font-size:14px;font-weight:500;transition:all .15s;margin-bottom:2px;border:1px solid transparent}
 .nav-item:hover{background:rgba(255,255,255,.03);color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.04)}
 .nav-item.active{background:rgba(239,68,68,.08);color:#fff;border-color:rgba(239,68,68,.15);font-weight:600}
 .nav-item .ico{width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -46,20 +46,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .page-head h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
 .page-head p{color:rgba(255,255,255,.35);font-size:13px;margin-top:4px;letter-spacing:.2px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px}
-.stat{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;border-left:3px solid rgba(239,68,68,.4);transition:border-color .2s}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;border-left:3px solid rgba(239,68,68,.5);transition:border-color .2s}
 .stat:hover{border-left-color:#ef4444}
 .stat .label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:8px}
-.stat .val{font-size:36px;font-weight:800;letter-spacing:-1px;color:#fff}
+.stat .val{font-size:36px;font-weight:800;letter-spacing:-1px;color:#fff;text-shadow:0 0 20px rgba(255,255,255,.1)}
 .stat .sub{font-size:12px;color:#10b981;margin-top:4px;font-weight:500}
-.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:24px;margin-bottom:24px}
+.panel{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:24px;margin-bottom:24px}
 .panel h2{font-size:16px;font-weight:700;margin-bottom:16px;color:#fff;text-transform:uppercase;letter-spacing:.5px;font-size:13px}
 /* PIPELINE */
 .pipeline{display:grid;grid-template-columns:repeat(6,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
-.col{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px;min-height:300px}
+.col{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;min-height:300px}
 .col-head{display:flex;justify-content:space-between;align-items:center;padding:4px 6px 12px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:10px}
 .col-head .name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.6)}
 .col-head .count{font-size:11px;background:rgba(239,68,68,.12);padding:2px 8px;border-radius:10px;color:#fca5a5}
-.cand-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.cand-card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
 .cand-card:hover{background:rgba(255,255,255,.04);border-color:rgba(239,68,68,.25);transform:translateY(-1px)}
 .cand-card .name{font-size:14px;font-weight:700;margin-bottom:3px}
 .cand-card .title{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px}
@@ -77,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 /* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .modal-bg.active{display:flex}
-.modal{background:#111111;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,.5)}
+.modal{background:#181818;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:32px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,.5)}
 .modal h2{font-size:22px;font-weight:800;margin-bottom:4px}
 .modal p.sub{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:20px}
 .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
@@ -85,7 +85,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.35);font-size:14px}
 @media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0;padding:20px}.pipeline{grid-template-columns:repeat(6,260px)}}
 /* Profile Report Sections */
-.ck-section{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:14px;overflow:hidden}
+.ck-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
 .ck-section-head{padding:16px 20px;font-size:15px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
 .ck-section-body{padding:0}
 .ck-item{padding:14px 20px;border-top:1px solid rgba(255,255,255,.04);font-size:14px;color:rgba(255,255,255,.8);line-height:1.5}
@@ -728,15 +728,25 @@ async function saveJob(){
 }
 
 // AI EDGE FUNCTION HELPER
-async function callAgent(name,body){
-  const r=await fetch(`${SUPABASE_URL}/functions/v1/${name}`,{
-    method:'POST',
-    headers:{'Authorization':`Bearer ${SUPABASE_KEY}`,'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error||'Agent error');
-  return d;
+async function callAgent(name,body,timeoutMs=15000){
+  const ac=new AbortController();
+  const timer=setTimeout(()=>ac.abort(),timeoutMs);
+  try{
+    const r=await fetch(`${SUPABASE_URL}/functions/v1/${name}`,{
+      method:'POST',
+      headers:{'Authorization':`Bearer ${SUPABASE_KEY}`,'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(body),
+      signal:ac.signal
+    });
+    clearTimeout(timer);
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Agent error');
+    return d;
+  }catch(e){
+    clearTimeout(timer);
+    if(e.name==='AbortError')throw new Error('Request timed out. Please try again.');
+    throw e;
+  }
 }
 
 // AI Resume Scorer (real Claude)
@@ -780,7 +790,7 @@ async function runPersonality(){
       <svg width="48" height="48" viewBox="0 0 48 48" style="animation:rdna-spin 1.2s linear infinite"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/><circle cx="24" cy="24" r="20" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="80 45" stroke-linecap="round"/></svg>
     </div>
     <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px" id="_persPhase">Scanning profile data</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.35)">This typically takes 5\u201315 seconds</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.35)">Generating your report\u2026</div>
   </div>`;
   if(!document.getElementById('rdna-spin-style')){const st=document.createElement('style');st.id='rdna-spin-style';st.textContent='@keyframes rdna-spin{to{transform:rotate(360deg)}}';document.head.appendChild(st)}
   !function(){var ph=["Scanning profile data","Mapping personality dimensions","Evaluating communication patterns","Generating behavioral insights","Compiling assessment report"],i=0,pe=document.getElementById("_persPhase");if(pe){var iv=setInterval(function(){i++;if(i<ph.length&&pe){pe.textContent=ph[i]}else{clearInterval(iv)}},2500)}}();
