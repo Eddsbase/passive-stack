@@ -82,6 +82,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .hidden{display:none!important}
 .empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,.4);font-size:14px}
 @media(max-width:900px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0;padding:20px}.pipeline{grid-template-columns:repeat(6,260px)}}
+/* Crystal Knows Style Sections */
+.ck-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+.ck-section-head{padding:16px 20px;font-size:15px;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:10px}
+.ck-section-body{padding:0}
+.ck-item{padding:14px 20px;border-top:1px solid rgba(255,255,255,.05);font-size:14px;color:rgba(255,255,255,.85);line-height:1.5}
+.ck-item:first-child{border-top:none}
+.ck-spectrum{padding:16px 20px;border-top:1px solid rgba(255,255,255,.05)}
+.ck-spectrum:first-child{border-top:none}
+.ck-spectrum-row{display:flex;align-items:center;gap:14px}
+.ck-spectrum-label{font-size:12px;color:rgba(255,255,255,.55);width:90px;text-align:right;flex-shrink:0}
+.ck-spectrum-label.right{text-align:left}
+.ck-spectrum-bar{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;position:relative}
+.ck-spectrum-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;border:3px solid;background:#111118}
+.ck-value-card{padding:16px 20px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:flex-start;gap:14px}
+.ck-value-card:first-child{border-top:none}
+.ck-value-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ck-value-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.ck-value-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.5}
+.ck-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.ck-grid{grid-template-columns:1fr}}
+.ck-trait-badges{display:flex;gap:10px;flex-wrap:wrap;padding:0 20px 16px}
+.ck-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border:1.5px solid}
 </style>
 </head>
 <body>
@@ -590,10 +612,22 @@ function renderPersonaReport(md,name){
 
   html+=`<div style="padding:28px 32px;display:grid;gap:20px">`;
 
-  // ── DISC CARD ──
+  // Helper: render a Crystal Knows section card
+  function ckSection(title,icon,color,items){
+    if(!items||!items.length)return '';
+    return `<div class="ck-section">
+      <div class="ck-section-head" style="background:${color}18;color:${color}">
+        <span style="font-size:18px">${icon}</span>${esc(title)}
+      </div>
+      <div class="ck-section-body">${items.map(x=>`<div class="ck-item">${esc(x)}</div>`).join('')}</div>
+    </div>`;
+  }
+
+  // ── DISC CARD (enhanced) ──
   if(parsed.disc){
     html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
-      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:16px">DISC Profile — Crystal Knows Format</div>
+      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:6px">DISC Profile — Crystal Knows Format</div>
+      ${parsed.discTypeName?`<div style="font-size:22px;font-weight:800;color:${headerColor};margin-bottom:16px">${esc(parsed.discTypeName)} <span style="font-weight:400;font-size:16px;color:rgba(255,255,255,.5)">(${esc(discType)})</span></div>`:''}
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
         ${['D','I','S','C'].map(l=>{
           const active=discType.toUpperCase().includes(l);
@@ -604,7 +638,31 @@ function renderPersonaReport(md,name){
           </div>`;
         }).join('')}
       </div>
-      ${parsed.discDesc?`<div style="color:rgba(255,255,255,.75);font-size:14px;line-height:1.6">${esc(parsed.discDesc)}</div>`:''}
+      ${parsed.discDesc?`<div style="color:rgba(255,255,255,.75);font-size:14px;line-height:1.6;margin-bottom:14px">${esc(parsed.discDesc)}</div>`:''}
+      ${parsed.traitBadges.length?`<div style="display:flex;gap:10px;flex-wrap:wrap">${parsed.traitBadges.map(b=>`<span class="ck-badge" style="color:${headerColor};border-color:${headerColor}55">${esc(b.toUpperCase())}</span>`).join('')}</div>`:''}
+    </div>`;
+  }
+
+  // ── PERSONALITY TRAITS (Spectrum Sliders) ──
+  if(parsed.personalityTraits.length){
+    html+=`<div class="ck-section">
+      <div class="ck-section-head" style="background:rgba(139,92,246,.12);color:#a78bfa">
+        <span style="font-size:18px">⚖️</span>Personality Traits
+      </div>
+      <div class="ck-section-body">
+        ${parsed.personalityTraits.map(t=>{
+          const pct=t.value<=10?t.value*10:Math.min(100,t.value);
+          return `<div class="ck-spectrum">
+            <div class="ck-spectrum-row">
+              <span class="ck-spectrum-label">${esc(t.left)}</span>
+              <div class="ck-spectrum-bar">
+                <div class="ck-spectrum-dot" style="left:${pct}%;border-color:${headerColor};background:${headerColor}"></div>
+              </div>
+              <span class="ck-spectrum-label right">${esc(t.right)}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
     </div>`;
   }
 
@@ -650,16 +708,70 @@ function renderPersonaReport(md,name){
     html+=`</div>`;
   }
 
-  // ── TEXT SECTION CARDS ──
-  const sectionCards=[
-    {key:'strengths',title:'Strengths',icon:'🚀',color:'#86efac'},
-    {key:'blindSpots',title:'Blind Spots',icon:'⚠️',color:'#fde68a'},
-    {key:'commStyle',title:'Communication Style',icon:'💬',color:'#c4b5fd'},
-    {key:'idealEnv',title:'Ideal Environment',icon:'🌱',color:'#93c5fd'},
-    {key:'careerFit',title:'Career Fit',icon:'📈',color:'#fca5a5'},
+  // ── BEHAVIOR + ENERGIZERS ROW ──
+  if(parsed.behavior.length||parsed.energizers.length){
+    html+=`<div class="ck-grid">`;
+    html+=ckSection('Behavior','🎯','#60a5fa',parsed.behavior);
+    html+=ckSection('Energizers','⚡','#fbbf24',parsed.energizers);
+    html+=`</div>`;
+  }
+
+  // ── DRAINERS + STRENGTHS ROW ──
+  if(parsed.drainers.length||parsed.strengthsList.length){
+    html+=`<div class="ck-grid">`;
+    html+=ckSection('Drainers','📉','#f87171',parsed.drainers);
+    html+=ckSection('Strengths','🚀','#22c55e',parsed.strengthsList);
+    html+=`</div>`;
+  }
+
+  // ── BLIND SPOTS + FIRST IMPRESSION ROW ──
+  if(parsed.blindSpotsList.length||parsed.firstImpression.length){
+    html+=`<div class="ck-grid">`;
+    html+=ckSection('Blind Spots','⚠️','#eab308',parsed.blindSpotsList);
+    html+=ckSection('Make a Great First Impression','💡','#a78bfa',parsed.firstImpression);
+    html+=`</div>`;
+  }
+
+  // ── BUILDING TRUST + PRODUCT DEMO ROW ──
+  if(parsed.buildingTrust.length||parsed.productDemo.length){
+    html+=`<div class="ck-grid">`;
+    html+=ckSection('Building Trust','🤝','#f97316',parsed.buildingTrust);
+    html+=ckSection('Product Demo','🎤','#06b6d4',parsed.productDemo);
+    html+=`</div>`;
+  }
+
+  // ── NEGOTIATING + PRICING ROW ──
+  if(parsed.negotiating.length||parsed.pricing.length){
+    html+=`<div class="ck-grid">`;
+    html+=ckSection('Negotiating','🏷️','#ec4899',parsed.negotiating);
+    html+=ckSection('Pricing','📊','#8b5cf6',parsed.pricing);
+    html+=`</div>`;
+  }
+
+  // ── DRIVE TO ACTION + FOLLOWING UP ROW ──
+  if(parsed.driveToAction.length||parsed.followingUp.length){
+    html+=`<div class="ck-grid">`;
+    html+=ckSection('How to Drive to Action','📝','#14b8a6',parsed.driveToAction);
+    html+=ckSection('Following Up','⏰','#f59e0b',parsed.followingUp);
+    html+=`</div>`;
+  }
+
+  // ── WRITING STYLE / COMMUNICATION ──
+  if(parsed.writingStyle.length){
+    html+=ckSection('Writing Style — How to Email Them','✉️','#818cf8',parsed.writingStyle);
+  }
+
+  // ── FALLBACK: TEXT SECTION CARDS (for non-list content) ──
+  const textCards=[
+    {key:'strengths',list:'strengthsList',title:'Strengths',icon:'🚀',color:'#86efac'},
+    {key:'blindSpots',list:'blindSpotsList',title:'Blind Spots',icon:'⚠️',color:'#fde68a'},
+    {key:'commStyle',list:null,title:'Communication Style',icon:'💬',color:'#c4b5fd'},
+    {key:'idealEnv',list:null,title:'Ideal Environment',icon:'🌱',color:'#93c5fd'},
+    {key:'careerFit',list:null,title:'Career Fit',icon:'📈',color:'#fca5a5'},
   ];
-  sectionCards.forEach(s=>{
+  textCards.forEach(s=>{
     if(!parsed[s.key])return;
+    if(s.list&&parsed[s.list]&&parsed[s.list].length)return; // already rendered as CK section
     html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
         <span style="font-size:20px">${s.icon}</span>
@@ -668,6 +780,26 @@ function renderPersonaReport(md,name){
       <div style="color:rgba(255,255,255,.8);font-size:14px;line-height:1.7">${formatSectionText(parsed[s.key])}</div>
     </div>`;
   });
+
+  // ── VALUES ──
+  if(parsed.values.length){
+    const valIcons=['⭐','💰','🎯','🔒','✅','🌟','💎','🏆'];
+    const valColors=['#fbbf24','#34d399','#60a5fa','#f87171','#a78bfa','#ec4899','#06b6d4','#f97316'];
+    html+=`<div class="ck-section">
+      <div class="ck-section-head" style="background:rgba(236,72,153,.12);color:#ec4899">
+        <span style="font-size:18px">🔑</span>Values
+      </div>
+      <div class="ck-section-body">
+        ${parsed.values.map((v,i)=>`<div class="ck-value-card">
+          <div class="ck-value-icon" style="background:${valColors[i%8]}18;color:${valColors[i%8]}">${valIcons[i%8]}</div>
+          <div>
+            <div class="ck-value-title" style="color:${valColors[i%8]}">${esc(v.name)}</div>
+            ${v.desc?`<div class="ck-value-desc">${esc(v.desc)}</div>`:''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
 
   // ── BOTTOM LINE ──
   if(parsed.bottomLine){
@@ -683,11 +815,19 @@ function renderPersonaReport(md,name){
 
 /* ── Parse markdown into structured data ── */
 function parsePersonaMd(md){
-  const r={disc:'',discDesc:'',mbti:'',mbtiDesc:'',enneagram:'',enneagramDesc:'',bigFive:[],strengths:'',blindSpots:'',commStyle:'',idealEnv:'',careerFit:'',bottomLine:''};
+  const r={disc:'',discDesc:'',discTypeName:'',traitBadges:[],mbti:'',mbtiDesc:'',enneagram:'',enneagramDesc:'',bigFive:[],
+    personalityTraits:[],behavior:[],energizers:[],drainers:[],strengths:'',strengthsList:[],blindSpots:'',blindSpotsList:[],
+    commStyle:'',idealEnv:'',careerFit:'',firstImpression:[],buildingTrust:[],negotiating:[],pricing:[],
+    productDemo:[],driveToAction:[],followingUp:[],writingStyle:[],values:[],bottomLine:''};
   if(!md)return r;
   // DISC
   let m=md.match(/DISC[:\s]+([A-Za-z]{1,4})\b/i);if(m)r.disc=m[1];
-  m=md.match(/DISC[:\s]+[A-Za-z]{1,4}[\s—–-]+(.+?)(?:\n\n|\n[A-Z])/s);if(m)r.discDesc=m[1].trim();
+  m=md.match(/DISC[:\s]+[A-Za-z]{1,4}[\s—–-]+([^\n]+)/i);if(m)r.discDesc=m[1].trim();
+  // DISC Type Name (e.g. "Architect", "Driver", "Initiator")
+  m=md.match(/(?:Type\s*Name|Archetype|DISC\s*Type)[:\s]+([A-Za-z\s]+?)(?:\n|$)/i);if(m)r.discTypeName=m[1].trim();
+  // Trait badges
+  m=md.match(/(?:Trait\s*Badges?|Key\s*Traits?|Personality\s*Badges?)[:\s]*\n?([-•].+(?:\n[-•].+)*)/i);
+  if(m){r.traitBadges=m[1].split('\n').map(x=>x.replace(/^[-•]\s*/,'').trim()).filter(Boolean)}
   // MBTI
   m=md.match(/MBTI[:\s]+([ESTINFPJ]{4})\b/i);if(m)r.mbti=m[1].toUpperCase();
   m=md.match(/MBTI[:\s]+[A-Z]{4}[\s—–-]+(.+?)(?:\n\n|\n[A-Z])/si);if(m)r.mbtiDesc=m[1].trim().substring(0,120);
@@ -698,18 +838,54 @@ function parsePersonaMd(md){
   // Big Five
   const b5re=/[-•]\s*(Openness|Conscientiousness|Extraversion|Agreeableness|Neuroticism)[:\s]+(\d+)\/100[\s—–-]*(.+)?/gi;
   let bm;while((bm=b5re.exec(md))!==null){r.bigFive.push({name:bm[1],score:bm[2],desc:(bm[3]||'').trim()})}
+  // Personality Traits (spectrum pairs)
+  const specRe=/[-•]\s*(.+?)\s*[↔⟷<>→←]\s*(.+?)[:\s]+(\d+)(?:\/(?:10|100))?/gi;
+  let sm;while((sm=specRe.exec(md))!==null){r.personalityTraits.push({left:sm[1].trim(),right:sm[2].trim(),value:parseInt(sm[3])})}
+  if(!r.personalityTraits.length){
+    const specRe2=/[-•]\s*(.+?)\s+vs\.?\s+(.+?)[:\s]+(\d+)/gi;
+    while((sm=specRe2.exec(md))!==null){r.personalityTraits.push({left:sm[1].trim(),right:sm[2].trim(),value:parseInt(sm[3])})}
+  }
+  // List-based section extractor
+  const extractList=(patterns)=>{
+    for(const p of patterns){
+      const re=new RegExp(p+'[^\\n]*\\n([\\s\\S]+?)(?=\\n##|\\n(?:🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line)|$)','i');
+      const sm=md.match(re);
+      if(sm){return sm[1].split('\n').map(x=>x.replace(/^[-•*\d.)\s]+/,'').trim()).filter(x=>x.length>3)}
+    }return[];
+  };
   // Sections by emoji or heading
   const extract=(patterns)=>{
     for(const p of patterns){
-      const re=new RegExp(p+'[\\s\\S]*?\\n([\\s\\S]+?)(?=\\n(?:🚀|⚠️|💬|🌱|📈|🔖|Bottom line|$))','i');
+      const re=new RegExp(p+'[\\s\\S]*?\\n([\\s\\S]+?)(?=\\n(?:##|🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line)|$)','i');
       const sm=md.match(re);if(sm)return sm[1].trim();
     }return '';
   };
   r.strengths=extract(['🚀[^\\n]*','##?\\s*Strengths']);
+  r.strengthsList=extractList(['🚀[^\\n]*','##?\\s*Strengths']);
   r.blindSpots=extract(['⚠️[^\\n]*','##?\\s*Blind\\s*Spots','##?\\s*Watch\\s*Out']);
+  r.blindSpotsList=extractList(['⚠️[^\\n]*','##?\\s*Blind\\s*Spots','##?\\s*Watch\\s*Out']);
   r.commStyle=extract(['💬[^\\n]*','##?\\s*Communication']);
   r.idealEnv=extract(['🌱[^\\n]*','##?\\s*Ideal\\s*Environment']);
   r.careerFit=extract(['📈[^\\n]*','##?\\s*Career\\s*Fit']);
+  r.behavior=extractList(['##?\\s*Behavior','##?\\s*Observable\\s*Behavior']);
+  r.energizers=extractList(['⚡[^\\n]*','##?\\s*Energizers','##?\\s*What\\s*Energizes']);
+  r.drainers=extractList(['##?\\s*Drainers','##?\\s*What\\s*Drains','##?\\s*Energy\\s*Drainers']);
+  r.firstImpression=extractList(['##?\\s*First\\s*Impression','##?\\s*Make.*First\\s*Impression','💡[^\\n]*']);
+  r.buildingTrust=extractList(['##?\\s*Building\\s*Trust','🤝[^\\n]*']);
+  r.negotiating=extractList(['##?\\s*Negotiat','🏷[^\\n]*']);
+  r.pricing=extractList(['##?\\s*Pricing','📊[^\\n]*']);
+  r.productDemo=extractList(['##?\\s*Product\\s*Demo','🎤[^\\n]*']);
+  r.driveToAction=extractList(['##?\\s*Drive.*Action','##?\\s*How.*Action','📝[^\\n]*']);
+  r.followingUp=extractList(['##?\\s*Follow.*Up','⏰[^\\n]*']);
+  r.writingStyle=extractList(['##?\\s*Writing\\s*Style','##?\\s*Email','✉[^\\n]*']);
+  // Values with descriptions
+  const valRe=/[-•]\s*\*?\*?([A-Za-z\s/]+?)\*?\*?[:\s][-–—]\s*(.+)/g;
+  const valSection=extract(['##?\\s*Values','🔑[^\\n]*']);
+  if(valSection){let vm;while((vm=valRe.exec(valSection))!==null){r.values.push({name:vm[1].trim(),desc:vm[2].trim()})}}
+  if(!r.values.length){
+    const valList=extractList(['##?\\s*Values','🔑[^\\n]*']);
+    valList.forEach(v=>{const parts=v.split(/[:\-–—]/);r.values.push({name:(parts[0]||v).trim(),desc:(parts[1]||'').trim()})});
+  }
   m=md.match(/(?:Bottom\s*line|🎯)[:\s]*\n?([\s\S]+?)$/i);if(m)r.bottomLine=m[1].trim();
   return r;
 }
