@@ -1848,7 +1848,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
 // ==== TEST CONNECTION ====
-async function testConn(providerId){
+window.testConn = async function(providerId){
   const st=$('testStatus_'+providerId);
   if(!st)return;
   st.innerHTML='<span style="color:rgba(255,255,255,.5)">Testing...</span>';
