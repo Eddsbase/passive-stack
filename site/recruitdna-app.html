@@ -439,6 +439,7 @@ let user={id:DEMO_USER_ID,email:'demo@recruitdna.local'},candidates=[],jobs=[];
 const STAGES=['new','screening','interview','offer','hired','rejected'];
 const $=id=>document.getElementById(id);
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+function fmtMd(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong style="color:#fff">$1</strong>')}
 
 /* ── Custom modal / toast helpers (replaces native prompt/alert) ── */
 function rdnaModal({title,subtitle,type,value,options,placeholder}){
@@ -785,24 +786,54 @@ async function runPersonality(){
     if(c)text=`${c.full_name}\nTitle: ${c.current_title||''}\nCompany: ${c.current_company||''}\nLocation: ${c.location||''}\nSkills: ${(c.skills||[]).join(', ')}\nYears: ${c.experience_years||''}\nSummary: ${c.summary||''}\nNotes: ${c.notes||''}`;
   }
   if(!text&&!url)return rdnaToast('Provide a URL, paste profile text, or pick a saved candidate','error');
-  const el=$('persResult');el.classList.remove('hidden');el.innerHTML=`<div class="panel" style="text-align:center;padding:48px 24px">
+  const el=$('persResult');el.classList.remove('hidden');
+  if(!document.getElementById('rdna-spin-style')){const st=document.createElement('style');st.id='rdna-spin-style';st.textContent='@keyframes rdna-spin{to{transform:rotate(360deg)}}';document.head.appendChild(st)}
+  el.innerHTML=`<div class="panel" style="text-align:center;padding:48px 24px">
     <div style="display:inline-block;margin-bottom:20px">
       <svg width="48" height="48" viewBox="0 0 48 48" style="animation:rdna-spin 1.2s linear infinite"><circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/><circle cx="24" cy="24" r="20" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="80 45" stroke-linecap="round"/></svg>
     </div>
-    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px" id="_persPhase">Scanning profile data</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.35)">Generating your report\u2026</div>
+    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">Streaming report\u2026</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.35)">Content appears as it generates</div>
   </div>`;
-  if(!document.getElementById('rdna-spin-style')){const st=document.createElement('style');st.id='rdna-spin-style';st.textContent='@keyframes rdna-spin{to{transform:rotate(360deg)}}';document.head.appendChild(st)}
-  !function(){var ph=["Scanning profile data","Mapping personality dimensions","Evaluating communication patterns","Generating behavioral insights","Compiling assessment report"],i=0,pe=document.getElementById("_persPhase");if(pe){var iv=setInterval(function(){i++;if(i<ph.length&&pe){pe.textContent=ph[i]}else{clearInterval(iv)}},2500)}}();
+  const candName=id?candidates.find(x=>x.id===id)?.full_name:'Profile';
   try{
-    const body={};if(text)body.profile=text;if(url)body.url=url;
-    const p=await callAgent('ai-personality-profile',body);
-    const candName=id?candidates.find(x=>x.id===id)?.full_name:'Profile';
-    if(id&&p.markdown){await sb.from('personality_profiles').upsert({candidate_id:id,user_id:user.id,profile:{markdown:p.markdown,generated_at:new Date().toISOString()}},{onConflict:'candidate_id'})}
-    window._lastPersonaMd=p.markdown||'';
+    const reqBody={stream:true};if(text)reqBody.profile=text;if(url)reqBody.url=url;
+    const resp=await fetch(`${SUPABASE_URL}/functions/v1/ai-personality-profile`,{
+      method:'POST',
+      headers:{'Authorization':`Bearer ${SUPABASE_KEY}`,'apikey':SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify(reqBody)
+    });
+    if(!resp.ok){const err=await resp.json().catch(()=>({error:'Request failed'}));throw new Error(err.error||'Agent error')}
+    const reader=resp.body.getReader();
+    const decoder=new TextDecoder();
+    let markdown='',buffer='',lastRender=0;
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      buffer+=decoder.decode(value,{stream:true});
+      const lines=buffer.split('\n');
+      buffer=lines.pop()||'';
+      for(const line of lines){
+        if(line.startsWith('data: ')){
+          try{
+            const d=JSON.parse(line.slice(6));
+            if(d.t)markdown+=d.t;
+            if(d.error)throw new Error(d.error);
+          }catch(ex){if(ex.message&&ex.message!=='Unexpected end of JSON input')throw ex}
+        }
+      }
+      const now=Date.now();
+      if(now-lastRender>400&&markdown.length>80){
+        lastRender=now;
+        el.innerHTML=renderPersonaReport(markdown,candName||'Profile');
+      }
+    }
+    if(id&&markdown){await sb.from('personality_profiles').upsert({candidate_id:id,user_id:user.id,profile:{markdown:markdown,generated_at:new Date().toISOString()}},{onConflict:'candidate_id'})}
+    window._lastPersonaMd=markdown;
     window._lastPersonaName=candName||'Profile';
     window._lastPersonaCandId=id||null;
-    el.innerHTML=renderPersonaReport(p.markdown||'',candName||'Candidate');
+    el.innerHTML=renderPersonaReport(markdown,candName||'Candidate');
+    rdnaToast('Report complete','success');
   }catch(e){el.innerHTML=`<div class="panel"><div style="color:#fca5a5">${esc(e.message)}</div></div>`}
 }
 function copyPersona(){if(window._lastPersonaMd){navigator.clipboard.writeText(window._lastPersonaMd);rdnaToast('Report copied to clipboard','success')}}
@@ -823,7 +854,7 @@ function downloadPersonaPdf(name){
     if(!items||!items.length)return '';
     return `<div style="break-inside:avoid;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px">
       <div style="${F}padding:11px 16px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:${color};color:#fff">${esc(title)}</div>
-      ${items.map(x=>`<div style="${bodyS}padding:10px 16px;border-top:1px solid #f3f4f6">${esc(x)}</div>`).join('')}
+      ${items.map(x=>`<div style="${bodyS}padding:10px 16px;border-top:1px solid #f3f4f6">${esc(x).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}</div>`).join('')}
     </div>`;
   }
 
@@ -1117,16 +1148,81 @@ function renderPersonaReport(md,name){
     if(parsed.strengthsList.length){
       html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px">
         <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6ee7b7;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>🚀</span>Key Strengths</div>
-        ${parsed.strengthsList.slice(0,4).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${esc(s)}</div>`).join('')}
+        ${parsed.strengthsList.slice(0,5).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${fmtMd(s)}</div>`).join('')}
       </div>`;
     }
     if(parsed.blindSpotsList.length){
       html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px">
         <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#fde68a;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>⚠️</span>Watch Out For</div>
-        ${parsed.blindSpotsList.slice(0,4).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${esc(s)}</div>`).join('')}
+        ${parsed.blindSpotsList.slice(0,4).map(s=>`<div style="padding:6px 0;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.04)">• ${fmtMd(s)}</div>`).join('')}
       </div>`;
     }
     html+=`</div>`;
+  }
+
+  // ── DETAILED SECTIONS (all on-screen) ──
+  function secCard(title,emoji,color,items){
+    if(!items||!items.length)return '';
+    return `<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden">
+      <div style="padding:14px 20px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${color};display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)"><span>${emoji}</span>${esc(title)}</div>
+      ${items.map(s=>`<div style="padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);border-bottom:1px solid rgba(255,255,255,.03);line-height:1.6">${fmtMd(s)}</div>`).join('')}
+    </div>`;
+  }
+  function proseCard(title,emoji,color,text){
+    if(!text)return '';
+    return `<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden">
+      <div style="padding:14px 20px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${color};display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)"><span>${emoji}</span>${esc(title)}</div>
+      <div style="padding:14px 20px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.7">${fmtMd(text)}</div>
+    </div>`;
+  }
+
+  if(parsed.behavior.length) html+=secCard('Behavioral Patterns','\uD83D\uDD0D','#60a5fa',parsed.behavior);
+
+  if(parsed.firstImpression.length||parsed.buildingTrust.length){
+    html+=`<div class="ck-grid">`;
+    html+=secCard('First Impression','\uD83D\uDCA1','#a78bfa',parsed.firstImpression);
+    html+=secCard('Building Trust','\uD83E\uDD1D','#f59e0b',parsed.buildingTrust);
+    html+=`</div>`;
+  }
+
+  if(parsed.productDemo.length||parsed.negotiating.length){
+    html+=`<div class="ck-grid">`;
+    html+=secCard('Selling to Them','\uD83C\uDFAF','#06b6d4',parsed.productDemo);
+    html+=secCard('Negotiation Style','\uD83C\uDFF7\uFE0F','#ec4899',parsed.negotiating);
+    html+=`</div>`;
+  }
+
+  if(parsed.driveToAction.length||parsed.followingUp.length){
+    html+=`<div class="ck-grid">`;
+    html+=secCard('Drive to Action','\u26A1','#10b981',parsed.driveToAction);
+    html+=secCard('Following Up','\u23F0','#f59e0b',parsed.followingUp);
+    html+=`</div>`;
+  }
+
+  if(parsed.writingStyle.length) html+=secCard('How to Email Them','\u2709\uFE0F','#ef4444',parsed.writingStyle);
+
+  if(parsed.commStyle||parsed.idealEnv||parsed.careerFit){
+    html+=proseCard('Communication Style','\uD83D\uDCAC','#60a5fa',parsed.commStyle);
+    html+=proseCard('Ideal Work Environment','\uD83C\uDF31','#10b981',parsed.idealEnv);
+    html+=proseCard('Career Trajectory & Fit','\uD83D\uDCC8','#3b82f6',parsed.careerFit);
+  }
+
+  if(parsed.recruiterRef){
+    html+=`<div style="background:rgba(239,68,68,.06);border:2px solid rgba(239,68,68,.3);border-radius:14px;overflow:hidden">
+      <div style="padding:14px 20px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#ef4444;border-bottom:1px solid rgba(239,68,68,.15)">Recruiter Quick Reference</div>
+      <div style="padding:14px 20px;font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;white-space:pre-line">${fmtMd(parsed.recruiterRef)}</div>
+    </div>`;
+  }
+
+  if(parsed.values.length){
+    const vc=['#ef4444','#10b981','#f59e0b','#06b6d4','#ec4899','#a78bfa','#f97316','#14b8a6'];
+    html+=`<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden">
+      <div style="padding:14px 20px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a78bfa;border-bottom:1px solid rgba(255,255,255,.05)">\uD83D\uDD11 Core Values</div>
+      ${parsed.values.map((v,i)=>`<div style="padding:10px 20px;border-bottom:1px solid rgba(255,255,255,.03)">
+        <span style="font-size:13px;font-weight:700;color:${vc[i%8]}">${esc(v.name)}</span>
+        ${v.desc?`<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px;line-height:1.5">${esc(v.desc)}</div>`:''}
+      </div>`).join('')}
+    </div>`;
   }
 
   // ── BOTTOM LINE ──
@@ -1139,8 +1235,7 @@ function renderPersonaReport(md,name){
 
   // ── CTA: Download full report ──
   html+=`<div style="text-align:center;padding:20px 0">
-    <button class="btn btn-primary" style="width:auto;padding:14px 36px;font-size:15px;font-weight:700;letter-spacing:.3px" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download Full Report</button>
-    <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:10px">Includes: Personality Traits, Behavior, Energizers, Drainers, Communication, Negotiating, Values & more</div>
+    <button class="btn btn-primary" style="width:auto;padding:14px 36px;font-size:15px;font-weight:700;letter-spacing:.3px" onclick="downloadPersonaPdf('${esc(name?.replace(/'/g,''))}')">⬇ Download Full Report (PDF)</button>
   </div>`;
 
   html+=`</div></div>`;
@@ -1154,24 +1249,33 @@ function parsePersonaMd(md){
     commStyle:'',idealEnv:'',careerFit:'',firstImpression:[],buildingTrust:[],negotiating:[],pricing:[],
     productDemo:[],driveToAction:[],followingUp:[],writingStyle:[],values:[],bottomLine:''};
   if(!md)return r;
-  // DISC
-  let m=md.match(/DISC[:\s]+([A-Za-z]{1,4})\b/i);if(m)r.disc=m[1];
-  m=md.match(/DISC[:\s]+[A-Za-z]{1,4}[\s—–-]+([^\n]+)/i);if(m)r.discDesc=m[1].trim();
-  // DISC Type Name (e.g. "Architect", "Driver", "Initiator")
-  m=md.match(/(?:Type\s*Name|Archetype|DISC\s*Type)[:\s]+([A-Za-z\s]+?)(?:\n|$)/i);if(m)r.discTypeName=m[1].trim();
+  // DISC — handles both "DISC: Di" and "**Type:** Di" under ## DISC heading
+  let m=md.match(/DISC[\s\S]*?\*\*Type:\*\*\s*([A-Za-z]{1,4})\b/i);
+  if(!m)m=md.match(/DISC[:\s]+([A-Za-z]{1,4})\b/i);
+  if(m)r.disc=m[1];
+  // DISC Archetype
+  m=md.match(/\*\*Archetype:\*\*\s*([^\n]+)/i);if(m)r.discTypeName=m[1].trim();
+  if(!r.discTypeName){m=md.match(/(?:Type\s*Name|DISC\s*Type)[:\s]+([A-Za-z\s-]+?)(?:\n|$)/i);if(m)r.discTypeName=m[1].trim()}
+  // DISC description — paragraph after archetype line
+  m=md.match(/\*\*Archetype:\*\*[^\n]*\n\n([\s\S]+?)(?=\n\n---|\n\n##)/i);if(m)r.discDesc=m[1].trim();
+  if(!r.discDesc){m=md.match(/DISC[:\s]+[A-Za-z]{1,4}[\s—–-]+([^\n]+)/i);if(m)r.discDesc=m[1].trim()}
   // Trait badges
   m=md.match(/(?:Trait\s*Badges?|Key\s*Traits?|Personality\s*Badges?)[:\s]*\n?([-•].+(?:\n[-•].+)*)/i);
   if(m){r.traitBadges=m[1].split('\n').map(x=>x.replace(/^[-•]\s*/,'').trim()).filter(Boolean)}
-  // MBTI
-  m=md.match(/MBTI[:\s]+([ESTINFPJ]{4})\b/i);if(m)r.mbti=m[1].toUpperCase();
-  m=md.match(/MBTI[:\s]+[A-Z]{4}[\s—–-]+(.+?)(?:\n\n|\n[A-Z])/si);if(m)r.mbtiDesc=m[1].trim().substring(0,120);
-  // Enneagram
-  m=md.match(/Enneagram[:\s]+(?:Type\s*)?(\d[wW]\d)/i);if(m)r.enneagram=m[1];
-  else{m=md.match(/Enneagram[:\s]+(?:Type\s*)?(\d)/i);if(m)r.enneagram='Type '+m[1]}
-  m=md.match(/Enneagram[:\s]+[^\n]+[\s—–-]+(.+?)(?:\n\n|\n[A-Z])/si);if(m)r.enneagramDesc=m[1].trim().substring(0,120);
-  // Big Five
-  const b5re=/[-•]\s*(Openness|Conscientiousness|Extraversion|Agreeableness|Neuroticism)[:\s]+(\d+)\/100[\s—–-]*(.+)?/gi;
-  let bm;while((bm=b5re.exec(md))!==null){r.bigFive.push({name:bm[1],score:bm[2],desc:(bm[3]||'').trim()})}
+  // MBTI — handles "**Type:** ENTJ" under ## MBTI heading
+  m=md.match(/## MBTI[\s\S]*?\*\*Type:\*\*\s*([ESTINFPJ]{4})\b/i);
+  if(!m)m=md.match(/MBTI[:\s]+([ESTINFPJ]{4})\b/i);
+  if(m)r.mbti=m[1].toUpperCase();
+  m=md.match(/\*\*Type:\*\*\s*[ESTINFPJ]{4}\s*[—–-]\s*([^\n]+)/i);if(m)r.mbtiDesc=m[1].trim().substring(0,200);
+  // Enneagram — handles "**Type:** 3w8" under ## Enneagram heading
+  m=md.match(/## Enneagram[\s\S]*?\*\*Type:\*\*\s*(?:Type\s*)?(\d[wW]\d)/i);
+  if(!m)m=md.match(/Enneagram[:\s]+(?:Type\s*)?(\d[wW]\d)/i);
+  if(m)r.enneagram=m[1];
+  else{m=md.match(/Enneagram[\s\S]*?\*\*Type:\*\*\s*(?:Type\s*)?(\d)/i);if(m)r.enneagram='Type '+m[1]}
+  m=md.match(/## Enneagram[\s\S]*?\*\*Type:\*\*\s*[^\n]*[—–-]\s*([^\n]+)/i);if(m)r.enneagramDesc=m[1].trim().substring(0,200);
+  // Big Five — handles both "- **Openness:** 72/100" and "- Openness: 72/100"
+  const b5re=/\*?\*?\s*(Openness|Conscientiousness|Extraversion|Agreeableness|Neuroticism)\s*:?\*?\*?\s*(\d+)\/100\s*[—–-]?\s*([\s\S]*?)(?=\n-\s*\*?\*?\s*(?:Openness|Conscientiousness|Extraversion|Agreeableness|Neuroticism)|\n\n##|\n\n---)/gi;
+  let bm;while((bm=b5re.exec(md))!==null){r.bigFive.push({name:bm[1],score:bm[2],desc:(bm[3]||'').trim().replace(/\n/g,' ').substring(0,200)})}
   // Personality Traits (spectrum pairs)
   const specRe=/[-•]\s*(.+?)\s*[↔⟷<>→←]\s*(.+?)[:\s]+(\d+)(?:\/(?:10|100))?/gi;
   let sm;while((sm=specRe.exec(md))!==null){r.personalityTraits.push({left:sm[1].trim(),right:sm[2].trim(),value:parseInt(sm[3])})}
@@ -1195,42 +1299,46 @@ function parsePersonaMd(md){
       }
     }return[];
   };
-  // Sections by emoji or heading
+  // Sections by ## heading
   const extract=(patterns)=>{
     for(const p of patterns){
-      const re=new RegExp(p+'[\\s\\S]*?\\n([\\s\\S]+?)(?=\\n(?:##|🚀|⚠️|💬|🌱|📈|⚡|🔖|🎯|💡|🤝|🏷|📊|✉|🎤|📝|⏰|🔑|Bottom line|Recruiter)|$)','i');
+      const re=new RegExp(p+'[^\\n]*\\n+([\\s\\S]+?)(?=\\n##|$)','i');
       const sm=md.match(re);if(sm)return sm[1].trim();
     }return '';
   };
-  r.strengths=extract(['🚀[^\\n]*','##?\\s*Strengths']);
-  r.strengthsList=extractList(['🚀[^\\n]*','##?\\s*Strengths']);
-  r.blindSpots=extract(['⚠️[^\\n]*','##?\\s*Blind\\s*Spots','##?\\s*Watch\\s*Out']);
-  r.blindSpotsList=extractList(['⚠️[^\\n]*','##?\\s*Blind\\s*Spots','##?\\s*Watch\\s*Out']);
-  r.commStyle=extract(['💬[^\\n]*','##?\\s*Communication']);
-  r.idealEnv=extract(['🌱[^\\n]*','##?\\s*Ideal\\s*Environment']);
-  r.careerFit=extract(['📈[^\\n]*','##?\\s*Career\\s*Fit']);
-  r.behavior=extractList(['##?\\s*Behavior','##?\\s*Observable\\s*Behavior']);
-  r.energizers=extractList(['⚡[^\\n]*','##?\\s*Energizers','##?\\s*What\\s*Energizes']);
-  r.drainers=extractList(['##?\\s*Drainers','##?\\s*What\\s*Drains','##?\\s*Energy\\s*Drainers']);
-  r.firstImpression=extractList(['##?\\s*First\\s*Impression','##?\\s*Make.*First\\s*Impression','💡[^\\n]*']);
-  r.buildingTrust=extractList(['##?\\s*Building\\s*Trust','🤝[^\\n]*']);
-  r.negotiating=extractList(['##?\\s*Negotiat','🏷[^\\n]*']);
-  r.pricing=extractList(['##?\\s*Pricing','📊[^\\n]*']);
-  r.productDemo=extractList(['##?\\s*Product\\s*Demo','🎤[^\\n]*']);
-  r.driveToAction=extractList(['##?\\s*Drive.*Action','##?\\s*How.*Action','📝[^\\n]*']);
-  r.followingUp=extractList(['##?\\s*Follow.*Up','⏰[^\\n]*']);
-  r.writingStyle=extractList(['##?\\s*Writing\\s*Style','##?\\s*Email','✉[^\\n]*']);
-  // Values with descriptions
-  const valRe=/[-•]\s*\*?\*?([A-Za-z\s/]+?)\*?\*?[:\s][-–—]\s*(.+)/g;
-  const valSection=extract(['##?\\s*Values','🔑[^\\n]*']);
-  if(valSection){let vm;while((vm=valRe.exec(valSection))!==null){r.values.push({name:vm[1].trim(),desc:vm[2].trim()})}}
+  r.strengths=extract(['##?\\s*Strengths']);
+  r.strengthsList=extractList(['##?\\s*Strengths']);
+  r.blindSpots=extract(['##?\\s*Blind\\s*Spots']);
+  r.blindSpotsList=extractList(['##?\\s*Blind\\s*Spots']);
+  r.commStyle=extract(['##?\\s*Communication\\s*Style']);
+  r.idealEnv=extract(['##?\\s*Ideal\\s*Work\\s*Environment','##?\\s*Ideal\\s*Environment']);
+  r.careerFit=extract(['##?\\s*Career\\s*Trajectory','##?\\s*Career\\s*Fit']);
+  r.behavior=extractList(['##?\\s*Behavioral\\s*Patterns','##?\\s*Behavior']);
+  r.energizers=extractList(['##?\\s*Energizers','##?\\s*What\\s*Energizes']);
+  r.drainers=extractList(['##?\\s*Drainers','##?\\s*What\\s*Drains']);
+  r.firstImpression=extractList(['##?\\s*How\\s*to\\s*Make.*First\\s*Impression','##?\\s*First\\s*Impression']);
+  r.buildingTrust=extractList(['##?\\s*Building\\s*Trust']);
+  r.negotiating=extractList(['##?\\s*Negotiation\\s*Style','##?\\s*Negotiat']);
+  r.pricing=extractList(['##?\\s*Pricing']);
+  r.productDemo=extractList(['##?\\s*Selling\\s*to','##?\\s*Product\\s*Demo']);
+  r.driveToAction=extractList(['##?\\s*How\\s*to\\s*Drive','##?\\s*Drive.*Action']);
+  r.followingUp=extractList(['##?\\s*Following\\s*Up']);
+  r.writingStyle=extractList(['##?\\s*How\\s*to\\s*Email','##?\\s*Email\\s*Them']);
+  // Values — **Value** — description format
+  const valSection=extract(['##?\\s*Core\\s*Values','##?\\s*Values']);
+  if(valSection){
+    const valRe2=/\*\*([^*]+)\*\*\s*[—–-]\s*(.+)/g;
+    let vm;while((vm=valRe2.exec(valSection))!==null){r.values.push({name:vm[1].trim(),desc:vm[2].trim()})}
+  }
   if(!r.values.length){
-    const valList=extractList(['##?\\s*Values','🔑[^\\n]*']);
-    valList.forEach(v=>{const parts=v.split(/[:\-–—]/);r.values.push({name:(parts[0]||v).trim(),desc:(parts[1]||'').trim()})});
+    const valList=extractList(['##?\\s*Core\\s*Values','##?\\s*Values']);
+    valList.forEach(v=>{const parts=v.split(/[—–-]/);r.values.push({name:(parts[0]||v).replace(/\*\*/g,'').trim(),desc:(parts.slice(1).join('-')||'').trim()})});
   }
   // Recruiter Quick Reference
-  r.recruiterRef=extract(['##?\\s*Recruiter\\s*Quick','##?\\s*Recruiter\\s*Reference']);
-  m=md.match(/(?:Bottom\s*line|🎯)[:\s]*\n?([\s\S]+?)$/i);if(m)r.bottomLine=m[1].trim();
+  r.recruiterRef=extract(['##?\\s*Recruiter']);
+  // Bottom Line
+  m=md.match(/## Bottom\s*Line\s*\n+([\s\S]+?)(?=\n---|\n##|$)/i);if(m)r.bottomLine=m[1].trim();
+  if(!r.bottomLine){m=md.match(/(?:Bottom\s*line)[:\s]*\n?([\s\S]+?)$/i);if(m)r.bottomLine=m[1].trim()}
   return r;
 }
 function formatSectionText(txt){
