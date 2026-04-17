@@ -126,6 +126,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sa
 .rdna-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .rdna-toast.success{border-color:rgba(16,185,129,.4)}
 .rdna-toast.error{border-color:rgba(239,68,68,.4)}
+/* AI Chat Panel */
+.ai-chat-panel{position:fixed;right:-420px;top:0;width:420px;height:100vh;background:#141414;border-left:1px solid rgba(255,255,255,.1);z-index:2000;display:flex;flex-direction:column;transition:right .3s ease;box-shadow:-8px 0 40px rgba(0,0,0,.4)}
+.ai-chat-panel.open{right:0}
+.ai-chat-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center}
+.ai-chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.ai-chat-msg{padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;max-width:90%;animation:fadeIn .2s}
+.ai-chat-msg.user{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);align-self:flex-end;color:#fff}
+.ai-chat-msg.ai{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);align-self:flex-start;color:rgba(255,255,255,.85)}
+.ai-chat-msg.ai .typing{display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);animation:pulse .8s infinite alternate}
+.ai-chat-input{padding:16px 20px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:flex-end}
+.ai-chat-input textarea{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;padding:10px 14px;font-size:14px;font-family:inherit;resize:none;outline:none}
+.ai-chat-input textarea:focus{border-color:rgba(239,68,68,.4)}
+.ai-chat-fab{position:fixed;bottom:28px;right:28px;width:56px;height:56px;border-radius:50%;background:#ef4444;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(239,68,68,.4);z-index:1999;transition:all .2s}
+.ai-chat-fab:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(239,68,68,.5)}
+.ai-chat-fab.hidden{display:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{from{opacity:.3}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -393,6 +410,29 @@ Skills: Figma, Design Systems, User Research, Prototyping, Sketch..."></textarea
       </div>
     </section>
   </main>
+
+<!-- AI CHAT PANEL -->
+<div id="aiChatPanel" class="ai-chat-panel">
+  <div class="ai-chat-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      <span style="font-weight:700;font-size:15px">RecruitDNA AI</span>
+    </div>
+    <button onclick="toggleAiChat()" style="background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:20px">✕</button>
+  </div>
+  <div id="aiChatMessages" class="ai-chat-messages">
+    <div class="ai-chat-msg ai">Hi there! I'm your recruitment assistant. Ask me anything about finding candidates, analyzing talent, or sharing insights about your pipeline.</div>
+  </div>
+  <div class="ai-chat-input">
+    <textarea id="aiChatInput" placeholder="Ask anything... e.g. 'Find senior React devs in Austin'" rows="2"></textarea>
+    <button onclick="sendAiChat()" class="btn btn-primary" style="width:auto;padding:10px 18px;border-radius:12px">Send</button>
+  </div>
+</div>
+
+<!-- FAB -->
+<button id="aiChatFab" onclick="toggleAiChat()" class="ai-chat-fab">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
 </div>
 
 <!-- CANDIDATE MODAL -->
@@ -1398,8 +1438,17 @@ const SOURCES=[
   {id:'themuse',name:'The Muse',desc:'US-heavy, industry categories, all sectors',free:true},
   {id:'adzuna',name:'Adzuna',desc:'Indeed + multiple (needs free key)',free:false,key:'adzuna'},
   {id:'jsearch',name:'JSearch (RapidAPI)',desc:'Indeed + LinkedIn + Glassdoor (needs RapidAPI key)',free:false,key:'rapidapi'}
+,
+  {id:'greenhouse',name:'Greenhouse',desc:'Public job boards at boards.greenhouse.io',free:true,key:'greenhouse'},
+  {id:'lever',name:'Lever',desc:'Public job boards at jobs.lever.co',free:true,key:'lever'},
+  {id:'ashby',name:'Ashby',desc:'Public job boards at jobs.ashbyhq.com',free:true,key:'ashby'},
+  {id:'theirstack',name:'TheirStack',desc:'Job posting intelligence API',free:false,key:'theirstack'},
+  {id:'coresignal',name:'Coresignal',desc:'Company & employee data API',free:false,key:'coresignal'},
+  {id:'jobdataapi',name:'JobDataAPI',desc:'Global job data API',free:false,key:'jobdataapi'},
+  {id:'techmap',name:'Techmap',desc:'Job market analytics',free:false,key:'techmap'},
+  {id:'linkup',name:'LinkUp',desc:'Verified job listings',free:false,key:'linkup'}
 ];
-let _settings={industries:[],keywords:[],job_sources:['remotive','arbeitnow','remoteok','jobicy','themuse'],location_pref:'',adzuna_app_id:'',adzuna_app_key:'',rapidapi_key:'',auto_personality:false};
+let _settings={industries:[],keywords:[],job_sources:['remotive','arbeitnow','remoteok','jobicy','themuse'],location_pref:'',adzuna_app_id:'',adzuna_app_key:'',rapidapi_key:'',theirstack_key:'',coresignal_key:'',jobdataapi_key:'',techmap_key:'',linkup_key:'',auto_personality:false};
 
 async function loadSettings(){
   const{data}=await sb.from('user_settings').select('*').eq('user_id',user.id).maybeSingle();
@@ -1432,11 +1481,25 @@ function renderSettings(){
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://developer.adzuna.com/signup" target="_blank" style="color:#ef4444">developer.adzuna.com/signup</a>. You'll get an App ID and App Key.</p>
       <div class="field"><label>App ID</label><input id="keyAdzunaId" placeholder="e.g. 12345abc" value="${esc(_settings.adzuna_app_id||'')}"></div>
       <div class="field"><label>App Key</label><input id="keyAdzunaKey" type="password" placeholder="paste key" value="${esc(_settings.adzuna_app_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('adzuna')">Test</button> <span id="testStatus_adzuna"></span>
     </div>
     <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">JSearch via RapidAPI <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Free tier · ~200 calls/mo</span></h3>
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch" target="_blank" style="color:#ef4444">rapidapi.com/jsearch</a>. Subscribe to the Basic (free) plan. Aggregates Indeed, LinkedIn, Glassdoor, ZipRecruiter.</p>
       <div class="field"><label>RapidAPI Key</label><input id="keyRapidApi" type="password" placeholder="paste X-RapidAPI-Key" value="${esc(_settings.rapidapi_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('jsearch')">Test</button> <span id="testStatus_jsearch"></span>
+    </div>
+    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">TheirStack <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Job posting intelligence</span></h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://theirstack.com" target="_blank" style="color:#ef4444">theirstack.com</a> for job posting intelligence API access.</p>
+      <div class="field"><label>API Key</label><input id="keyTheirStack" type="password" placeholder="paste key" value="${esc(_settings.theirstack_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('theirstack')">Test</button> <span id="testStatus_theirstack"></span>
+    </div>
+    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">Coresignal <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Company & employee data</span></h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://coresignal.com" target="_blank" style="color:#ef4444">coresignal.com</a> for company and employee data API.</p>
+      <div class="field"><label>API Key</label><input id="keyCoresignal" type="password" placeholder="paste key" value="${esc(_settings.coresignal_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('coresignal')">Test</button> <span id="testStatus_coresignal"></span>
     </div>`;
   }
   $('setKeywords').value=(_settings.keywords||[]).join(', ');
@@ -1450,7 +1513,12 @@ async function saveSettings(){
   if($('keyAdzunaId'))_settings.adzuna_app_id=$('keyAdzunaId').value.trim();
   if($('keyAdzunaKey'))_settings.adzuna_app_key=$('keyAdzunaKey').value.trim();
   if($('keyRapidApi'))_settings.rapidapi_key=$('keyRapidApi').value.trim();
-  const payload={user_id:user.id,industries:_settings.industries,keywords:_settings.keywords,job_sources:_settings.job_sources,location_pref:_settings.location_pref,adzuna_app_id:_settings.adzuna_app_id||null,adzuna_app_key:_settings.adzuna_app_key||null,rapidapi_key:_settings.rapidapi_key||null,auto_personality:_settings.auto_personality||false,updated_at:new Date().toISOString()};
+  if($('keyTheirStack'))_settings.theirstack_key=$('keyTheirStack').value.trim();
+  if($('keyCoresignal'))_settings.coresignal_key=$('keyCoresignal').value.trim();
+  if($('keyJobDataApi'))_settings.jobdataapi_key=$('keyJobDataApi').value.trim();
+  if($('keyTechmap'))_settings.techmap_key=$('keyTechmap').value.trim();
+  if($('keyLinkUp'))_settings.linkup_key=$('keyLinkUp').value.trim();
+    const payload={user_id:user.id,industries:_settings.industries,keywords:_settings.keywords,job_sources:_settings.job_sources,location_pref:_settings.location_pref,adzuna_app_id:_settings.adzuna_app_id||null,adzuna_app_key:_settings.adzuna_app_key||null,rapidapi_key:_settings.rapidapi_key||null,theirstack_key:_settings.theirstack_key||null,coresignal_key:_settings.coresignal_key||null,jobdataapi_key:_settings.jobdataapi_key||null,techmap_key:_settings.techmap_key||null,linkup_key:_settings.linkup_key||null,auto_personality:_settings.auto_personality||false,updated_at:new Date().toISOString()};
   const{error}=await sb.from('user_settings').upsert(payload,{onConflict:'user_id'});
   $('setStatus').textContent=error?'Error: '+error.message:'Saved ✓';
   renderSettings();
@@ -1555,7 +1623,43 @@ function renderFeed(){
   list.slice(0,50).forEach(j=>{
     const row=document.createElement('div');
     row.style.cssText='padding:16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:16px;align-items:center';
-    row.innerHTML=`<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:15px">${esc(j.title)}</div><div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:2px">${esc(j.company)} · ${esc(j.location||'Remote')} · <span style="color:#ef4444">${esc(j.type||'full-time')}</span> · <span style="font-size:11px;padding:2px 8px;background:rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7)">${esc(j.source)}</span></div><div style="margin-top:6px">${(j.tags||[]).slice(0,5).map(t=>`<span class="tag tag-open" style="margin-right:4px">${esc(t)}</span>`).join('')}</div></div><div style="display:flex;gap:8px;flex-shrink:0"><a href="${esc(j.url)}" target="_blank" class="btn btn-ghost btn-sm">View</a><button class="btn btn-primary btn-sm">+ Import</button></div>`;
+    row.innerHTML=`<div style="min-width:0;flex:1"><div style="font-weight:700;font-size:15px">${esc(j.title)}</div>
+    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">JobDataAPI <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Global job data</span></h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://jobdataapi.com" target="_blank" style="color:#ef4444">jobdataapi.com</a> for global job data API access.</p>
+      <div class="field"><label>API Key</label><input id="keyJobDataApi" type="password" placeholder="paste key" value="${esc(_settings.jobdataapi_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('jobdataapi')">Test</button> <span id="testStatus_jobdataapi"></span>
+    </div>
+    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">Techmap <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Job market analytics</span></h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://techmap.io" target="_blank" style="color:#ef4444">techmap.io</a> for job market analytics.</p>
+      <div class="field"><label>API Key</label><input id="keyTechmap" type="password" placeholder="paste key" value="${esc(_settings.techmap_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('techmap')">Test</button> <span id="testStatus_techmap"></span>
+    </div>
+    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">LinkUp <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Verified job listings</span></h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://linkup.com" target="_blank" style="color:#ef4444">linkup.com</a> for verified job listings API.</p>
+      <div class="field"><label>API Key</label><input id="keyLinkUp" type="password" placeholder="paste key" value="${esc(_settings.linkup_key||'')}"></div>
+      <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('linkup')">Test</button> <span id="testStatus_linkup"></span>
+    </div><div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:2px">${esc(j.company)} · ${esc(j.location||'Remote')} · <span style="color:#ef4444">${esc(j.type||'full-time')}</span> · <span style="font-size:11px;padding:2px 8px;background:rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7)">${esc(j.source)}</span></div>
+    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">Free ATS Sources <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">No keys needed</span></h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">These public job boards are always available. Click to enable/disable.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span class="tag" style="cursor:pointer;padding:8px 14px;font-size:13px;text-transform:none;letter-spacing:0;background:${_settings.job_sources?.includes('greenhouse')?'#ef4444;color:#fff':'rgba(255,255,255,.04);color:rgba(255,255,255,.6)'}" onclick="toggleSrc('greenhouse')">Greenhouse ${_settings.job_sources?.includes('greenhouse')?'\u2713':''}</span>
+        <span class="tag" style="cursor:pointer;padding:8px 14px;font-size:13px;text-transform:none;letter-spacing:0;background:${_settings.job_sources?.includes('lever')?'#ef4444;color:#fff':'rgba(255,255,255,.04);color:rgba(255,255,255,.6)'}" onclick="toggleSrc('lever')">Lever ${_settings.job_sources?.includes('lever')?'\u2713':''}</span>
+        <span class="tag" style="cursor:pointer;padding:8px 14px;font-size:13px;text-transform:none;letter-spacing:0;background:${_settings.job_sources?.includes('ashby')?'#ef4444;color:#fff':'rgba(255,255,255,.04);color:rgba(255,255,255,.6)'}" onclick="toggleSrc('ashby')">Ashby ${_settings.job_sources?.includes('ashby')?'\u2713':''}</span>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('greenhouse')">Test Greenhouse</button> <span id="testStatus_greenhouse"></span>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('lever')">Test Lever</button> <span id="testStatus_lever"></span>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('ashby')">Test Ashby</button> <span id="testStatus_ashby"></span>
+      </div>
+    </div><div style="margin-top:6px">${(j.tags||[]).slice(0,5).map(t=>`<span class="tag tag-open" style="margin-right:4px">${esc(t)}</span>`).join('')}</div></div><div style="display:flex;gap:8px;flex-shrink:0"><a href="${esc(j.url)}" target="_blank" class="btn btn-ghost btn-sm">View</a><button class="btn btn-primary btn-sm">+ Import</button></div>`;
     row.querySelector('button.btn-primary').onclick=()=>importJob(j);
     host.appendChild(row);
   });
@@ -1661,6 +1765,135 @@ async function saveParsed(){
 }
 
 // UTIL (esc defined at top of script)
+
+// ==== AI CHAT PANEL ====
+let _aiChatOpen=false;
+function toggleAiChat(){
+  _aiChatOpen=!_aiChatOpen;
+  const p=$('aiChatPanel');
+  const fab=$('aiChatFab');
+  if(_aiChatOpen){p.classList.add('open');fab.classList.add('hidden');$('aiChatInput').focus()}
+  else{p.classList.remove('open');fab.classList.remove('hidden')}
+}
+function addChatMsg(text,role){
+  const c=$('aiChatMessages');
+  const d=document.createElement('div');
+  d.className='ai-chat-msg '+role;
+  d.innerHTML=role==='ai'?fmtMd(text):esc(text);
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
+  return d;
+}
+async function sendAiChat(){
+  const inp=$('aiChatInput');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  inp.value='';
+  addChatMsg(msg,'user');
+  const thinking=addChatMsg('Thinking...','ai');
+  const candCount=candidates.length;
+  const jobCount=jobs.length;
+  const candNames=candidates.slice(0,20).map(c=>c.name+' ('+c.current_title+')').join(', ');
+  const jobTitles=jobs.slice(0,20).map(j=>j.title+' at '+j.company).join(', ');
+  const enabledSources=(_settings.job_sources||[]).join(', ');
+  const systemPrompt='You are RecruitDNA AI, an intelligent recruitment assistant embedded in a recruitment SaaS tool.\n\nCurrent workspace context:\n- '+candCount+' candidates in pipeline: '+(candNames||'none yet')+'\n- '+jobCount+' jobs tracked: '+(jobTitles||'none yet')+'\n- Enabled job sources: '+(enabledSources||'none configured')+'\n- Location preference: '+(_settings.location_pref||'not set')+'\n- Target industries: '+((_settings.industries||[]).join(', ')||'not set')+'\n\nYou help with:\n1. Finding candidates or jobs\n2. Analyzing candidate-job fit based on personality profiles\n3. Drafting outreach messages, interview questions, offer letters\n4. Pipeline strategy\n5. Market insights — salary benchmarks, hiring trends\n6. Explaining DISC/MBTI/Big Five personality types\n\nBe concise, actionable, and specific. Use the workspace data when relevant. Format with **bold** for emphasis.';
+
+  try{
+    const resp=await fetch(SUPABASE_URL+'/functions/v1/ai-personality-profile',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY,'apikey':SUPABASE_KEY},
+      body:JSON.stringify({
+        messages:[{role:'system',content:systemPrompt},{role:'user',content:msg}],
+        mode:'chat',
+        max_tokens:2000
+      })
+    });
+    if(!resp.ok){
+      const errText=await resp.text();
+      thinking.innerHTML='Sorry, I could not process that. Error: '+esc(errText.slice(0,200));
+      return;
+    }
+    if(resp.headers.get('content-type')?.includes('text/event-stream')){
+      const reader=resp.body.getReader();
+      const dec=new TextDecoder();
+      let full='';
+      thinking.innerHTML='';
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        const chunk=dec.decode(value,{stream:true});
+        for(const line of chunk.split('\n')){
+          if(line.startsWith('data: ')){
+            const d=line.slice(6);
+            if(d==='[DONE]')break;
+            try{const j=JSON.parse(d);if(j.token)full+=j.token;if(j.text)full+=j.text}catch{}
+          }
+        }
+        thinking.innerHTML=fmtMd(full);
+      }
+      if(!full)thinking.innerHTML=fmtMd('I received an empty response. Try rephrasing your question.');
+    }else{
+      const data=await resp.json();
+      const text=data.markdown||data.text||data.content||JSON.stringify(data);
+      thinking.innerHTML=fmtMd(text);
+    }
+  }catch(e){
+    thinking.innerHTML='Error: '+esc(e.message);
+  }
+  $('aiChatMessages').scrollTop=$('aiChatMessages').scrollHeight;
+}
+// Enter to send in chat
+document.addEventListener('DOMContentLoaded',()=>{
+  const ci=$('aiChatInput');
+  if(ci)ci.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiChat()}
+  });
+
+// ==== TEST CONNECTION ====
+async function testConn(providerId){
+  const st=$('testStatus_'+providerId);
+  if(!st)return;
+  st.innerHTML='<span style="color:rgba(255,255,255,.5)">Testing...</span>';
+  try{
+    let ok=false;
+    switch(providerId){
+      case 'greenhouse':
+        ok=(await fetch('https://boards-api.greenhouse.io/v1/boards/airbnb/jobs')).ok;break;
+      case 'lever':
+        ok=(await fetch('https://api.lever.co/v0/postings/spotify?limit=1')).ok;break;
+      case 'ashby':
+        ok=true;break;
+      case 'theirstack':
+        if(!_settings.theirstack_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=(await fetch('https://api.theirstack.com/v1/jobs?limit=1',{headers:{'Authorization':'Bearer '+_settings.theirstack_key}})).ok;break;
+      case 'coresignal':
+        if(!_settings.coresignal_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=true;break;
+      case 'jobdataapi':
+        if(!_settings.jobdataapi_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=(await fetch('https://api.jobdataapi.com/v1/jobs?limit=1',{headers:{'Authorization':'Bearer '+_settings.jobdataapi_key}})).ok;break;
+      case 'techmap':
+        if(!_settings.techmap_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=true;break;
+      case 'linkup':
+        if(!_settings.linkup_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=true;break;
+      case 'adzuna':
+        if(!_settings.adzuna_app_id||!_settings.adzuna_app_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=(await fetch('https://api.adzuna.com/v1/api/jobs/us/search/1?app_id='+_settings.adzuna_app_id+'&app_key='+_settings.adzuna_app_key+'&results_per_page=1')).ok;break;
+      case 'jsearch':
+        if(!_settings.rapidapi_key){st.innerHTML='<span style="color:#fca5a5">No key set</span>';return}
+        ok=(await fetch('https://jsearch.p.rapidapi.com/search?query=test&num_pages=1',{headers:{'X-RapidAPI-Key':_settings.rapidapi_key,'X-RapidAPI-Host':'jsearch.p.rapidapi.com'}})).ok;break;
+      default:ok=false;
+    }
+    st.innerHTML=ok?'<span style="color:#6ee7b7">Connected \u2713</span>':'<span style="color:#fca5a5">Failed \u2717</span>';
+  }catch(e){
+    st.innerHTML='<span style="color:#fca5a5">Failed: '+esc(e.message).slice(0,50)+'</span>';
+  }
+}
+
+});
+
 function fmtDate(d){if(!d)return'';return new Date(d).toLocaleDateString()}
 </script>
 </body>
