@@ -1475,7 +1475,7 @@ function renderSettings(){
   const ak=$('apiKeysBox');
   if(ak){
     ak.innerHTML=`
-    <div style="margin-bottom:20px;padding:14px;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);border-radius:10px;font-size:13px;color:#fde68a"><b>Keyed sources are disabled by default.</b> Paste keys below to unlock Indeed + LinkedIn + Glassdoor coverage. Stored in Supabase, never sent to the browser from anywhere else.</div>
+    <div style="margin-bottom:20px;padding:14px;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);border-radius:10px;font-size:13px;color:#fde68a"><b>Keyed sources are disabled by default.</b> Paste keys below to unlock coverage. Stored in Supabase, never sent to the browser from anywhere else.</div>
     <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">Adzuna <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Free tier · 1000 calls/mo</span></h3>
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Register at <a href="https://developer.adzuna.com/signup" target="_blank" style="color:#ef4444">developer.adzuna.com/signup</a>. You'll get an App ID and App Key.</p>
@@ -1500,8 +1500,7 @@ function renderSettings(){
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://coresignal.com" target="_blank" style="color:#ef4444">coresignal.com</a> for company and employee data API.</p>
       <div class="field"><label>API Key</label><input id="keyCoresignal" type="password" placeholder="paste key" value="${esc(_settings.coresignal_key||'')}"></div>
       <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('coresignal')">Test</button> <span id="testStatus_coresignal"></span>
-    </div>
-    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+    </div>    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">JobDataAPI <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">Global job data</span></h3>
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://jobdataapi.com" target="_blank" style="color:#ef4444">jobdataapi.com</a> for global job data API access.</p>
       <div class="field"><label>API Key</label><input id="keyJobDataApi" type="password" placeholder="paste key" value="${esc(_settings.jobdataapi_key||'')}"></div>
@@ -1518,8 +1517,7 @@ function renderSettings(){
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">Sign up at <a href="https://linkup.com" target="_blank" style="color:#ef4444">linkup.com</a> for verified job listings API.</p>
       <div class="field"><label>API Key</label><input id="keyLinkUp" type="password" placeholder="paste key" value="${esc(_settings.linkup_key||'')}"></div>
       <button class="btn btn-ghost btn-sm" style="width:auto" onclick="testConn('linkup')">Test</button> <span id="testStatus_linkup"></span>
-    </div><div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:2px">${esc(j.company)} · ${esc(j.location||'Remote')} · <span style="color:#ef4444">${esc(j.type||'full-time')}</span> · <span style="font-size:11px;padding:2px 8px;background:rgba(255,255,255,.08);border-radius:8px;color:rgba(255,255,255,.7)">${esc(j.source)}</span></div>
-    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
+    </div>    <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:16px">
       <h3 style="font-size:15px;font-weight:700;margin-bottom:6px">Free ATS Sources <span style="font-size:11px;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:rgba(255,255,255,.6);margin-left:6px;font-weight:500">No keys needed</span></h3>
       <p style="color:rgba(255,255,255,.55);font-size:13px;margin-bottom:12px">These public job boards are always available. Click to enable/disable.</p>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
